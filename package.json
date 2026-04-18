@@ -1,0 +1,29 @@
+{
+  "name": "@propjockey/breakpoint-system",
+  "version": "1.0.0",
+  "description": "A brand new way to write highly accessible, responsive CSS. Fluid design and typography units built in, custom-size breakpoints and custom-aliased queries, no scripts, no builds, 100% vanilla CSS. Deliver your designs.",
+  "main": "breakpoint-system.css",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/propjockey/breakpoint-system.git"
+  },
+  "keywords": [
+    "css",
+    "breakpoint",
+    "media queries",
+    "named breakpoints",
+    "breakpoint units"
+  ],
+  "author": "Jane Ori",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/propjockey/breakpoint-system/issues"
+  },
+  "homepage": "https://propjockey.breakpoint-system.com"
+}

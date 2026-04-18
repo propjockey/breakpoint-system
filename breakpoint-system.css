@@ -1,0 +1,1483 @@
+/**
+ * @propjockey/breakpoint-system
+ * BSD 2-Clause License
+ * Copyright (c) Jane Ori, PropJockey, 2026
+ */
+
+@supports ((selector(&)) and (font-weight: round(100, 0.05))) {
+  /* Specific tests made round() important. Final: Chrome 125, safari 16.5, ff 118
+  // Soft requires & nesting selector (chrome 112, safari 16.5, ff 117). Hard req:
+  // working tan(atan2()) scalars from registered <length> (~92% as of April 2026)
+  // chrome 111 (view-transition-name: none) and (background: paint(for-chromium))
+  // firefox 128 (color: rgb(from lightskyblue r g b)) and (-moz-appearance: none)
+  // fixed late in safari 16 (text-align-last: center) and (-webkit-hyphens: none)
+  // https://dev.to/janeori/css-type-casting-to-numeric-tanatan2-scalars-582j?2077
+  */
+
+  @layer breakpoint-system {
+    /* :root / global configuration to capture user's system font-size adjustment */
+    @property --bp-rem-adjusted { syntax: "<number>"; initial-value: 100; inherits: false; }
+    @property --_bp-rem { syntax: "<length>"; initial-value: 16px; inherits: false; }
+    @property --_bp-nrem { syntax: "<number>"; initial-value: 16; inherits: true; }
+    @property --_bp-author-rem-basis { syntax: "<number>"; initial-value: 16; inherits: true; }
+    @property --bp-scaling-opt-out { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-bigger-scaling-opt-in { syntax: "<integer>"; initial-value: 1; inherits: false; }
+    @property --bp-full-scaling-opt-in { syntax: "<integer>"; initial-value: 2; inherits: false; }
+    @property --bp-user-em { syntax: "<integer>"; initial-value: 1; inherits: true; }
+    :root {
+      /* numeric copy of the author's font-size percentage on :root */
+      --bp-rem-adjusted: 100;
+      /* capture 1rem value */
+      --_bp-rem: 1rem;
+      /* dealing with small numbers so increase the atan2 angle for better precision */
+      --_bp-nrem: calc(100 * tan(atan2(var(--_bp-rem) * 100, 10000px)));
+      /* if rem-adjusted is 62.5, rem-basis will be 10 */
+      --_bp-author-rem-basis: calc(var(--bp-rem-adjusted) / 100 * 16);
+
+      /* options for --bp-user-em */
+      --bp-scaling-opt-out: 0;
+      --bp-bigger-scaling-opt-in: 1;
+      --bp-full-scaling-opt-in: 2;
+      --bp-user-em: var(--bp-bigger-scaling-opt-in);
+    }
+
+    /* Initialize breakpoint configurations */
+    @property --bpu-typography-scalar { syntax: "<number>"; initial-value: 1.2; inherits: true; }
+    @property --bp-0-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bp-1-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bp-2-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bp-3-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bp-4-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bp-5-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bp-6-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bp-7-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bp-8-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bp-9-at { syntax: "<number>"; initial-value: 0; inherits: true; }
+    /* default, optional, configs. Full screen width based set first: */
+    :where(.bp-stage) {
+      /* not a real bp, value is what effective-screensize is 16--bpu = 16 pixels? */
+      --bp-0-at: 375; /* just over 10% of mobile phones are 360 width, < 2% are smaller than that */
+      --qgte-xxs: var(--bp-qgte-0);
+      --qlt-xxs: var(--bp-qlt-0);
+      --qin-xxs: var(--bp-qin-0);
+      --fluid-xxs: var(--bp-fluid-0);
+
+      --bp-1-at: 480;
+      --qgte-xs: var(--bp-qgte-1);
+      --qlt-xs: var(--bp-qlt-1);
+      --qin-xs: var(--bp-qin-1);
+      --fluid-xs: var(--bp-fluid-1);
+
+      --bp-2-at: 768;
+      --qgte-sm: var(--bp-qgte-2);
+      --qlt-sm: var(--bp-qlt-2);
+      --qin-sm: var(--bp-qin-2);
+      --fluid-sm: var(--bp-fluid-2);
+
+      --bp-3-at: 1024;
+      --qgte-md: var(--bp-qgte-3);
+      --qlt-md: var(--bp-qlt-3);
+      --qin-md: var(--bp-qin-3);
+      --fluid-md: var(--bp-fluid-3);
+
+      --bp-4-at: 1280;
+      --qgte-lg: var(--bp-qgte-4);
+      --qlt-lg: var(--bp-qlt-4);
+      --qin-lg: var(--bp-qin-4);
+      --fluid-lg: var(--bp-fluid-4);
+
+      --bp-5-at: 1440;
+      --qgte-xl: var(--bp-qgte-5);
+      --qlt-xl: var(--bp-qlt-5);
+      --qin-xl: var(--bp-qin-5);
+      --fluid-xl: var(--bp-fluid-5);
+
+      --bp-6-at: 1920;
+      --qgte-xxl: var(--bp-qgte-6);
+      --qlt-xxl: var(--bp-qlt-6);
+      --qin-xxl: var(--bp-qin-6);
+      --fluid-xxl: var(--bp-fluid-6);
+
+      --bp-7-at: 0;
+      --bp-8-at: 0;
+      --bp-9-at: 0;
+
+      /* Typography Scalars
+      // xxs, xs: Minor Third @ 1.2
+      // sm, md: Major Third @ 1.25
+      // lg: Perfect Fourth @ 1.333
+      // xl: Augmented Fourth @ 1.414
+      // xxl: Perfect Fifth @ 1.5
+      //
+      // Use qin because author's --bp-fluidity might cause ranges to be 0
+      */
+      --bpu-typography-scalar: calc(
+        var(--qin-xxs) * 1.2 +
+        var(--qin-xs) * 1.2 +
+        var(--qin-sm) * 1.25 +
+        var(--qin-md) * 1.25 +
+        var(--qin-lg) * 1.333 +
+        var(--qin-xl) * 1.414 +
+        var(--qin-xxl) * 1.5
+      );
+    }
+
+    /* different set of width based defaults for individual components: */
+    :where(.bp-node) {
+      /* not a real bp, value is what effective-screensize is 16--bpu = 16 pixels? */
+      --bp-0-at: 120;
+      --qgte-coin: var(--bp-qgte-0);
+      --qlt-coin: var(--bp-qlt-0);
+      --qin-coin: var(--bp-qin-0);
+      --fluid-coin: var(--bp-fluid-0);
+
+      --bp-1-at: 160;
+      --qgte-sm-note: var(--bp-qgte-1);
+      --qlt-sm-note: var(--bp-qlt-1);
+      --qin-sm-note: var(--bp-qin-1);
+      --fluid-sm-note: var(--bp-fluid-1);
+
+      --bp-2-at: 240;
+      --qgte-sm-card: var(--bp-qgte-2);
+      --qlt-sm-card: var(--bp-qlt-2);
+      --qin-sm-card: var(--bp-qin-2);
+      --fluid-sm-card: var(--bp-fluid-2);
+
+      --bp-3-at: 300;
+      --qgte-sm-page: var(--bp-qgte-3);
+      --qlt-sm-page: var(--bp-qlt-3);
+      --qin-sm-page: var(--bp-qin-3);
+      --fluid-sm-page: var(--bp-fluid-3);
+
+      --bp-4-at: 384;
+      --qgte-md-note: var(--bp-qgte-4);
+      --qlt-md-note: var(--bp-qlt-4);
+      --qin-md-note: var(--bp-qin-4);
+      --fluid-md-note: var(--bp-fluid-4);
+
+      --bp-5-at: 468;
+      --qgte-md-card: var(--bp-qgte-5);
+      --qlt-md-card: var(--bp-qlt-5);
+      --qin-md-card: var(--bp-qin-5);
+      --fluid-md-card: var(--bp-fluid-5);
+
+      --bp-6-at: 600;
+      --qgte-md-page: var(--bp-qgte-6);
+      --qlt-md-page: var(--bp-qlt-6);
+      --qin-md-page: var(--bp-qin-6);
+      --fluid-md-page: var(--bp-fluid-6);
+
+      --bp-7-at: 728;
+      --qgte-lg-note: var(--bp-qgte-7);
+      --qlt-lg-note: var(--bp-qlt-7);
+      --qin-lg-note: var(--bp-qin-7);
+      --fluid-lg-note: var(--bp-fluid-7);
+
+      --bp-8-at: 800;
+      --qgte-lg-card: var(--bp-qgte-8);
+      --qlt-lg-card: var(--bp-qlt-8);
+      --qin-lg-card: var(--bp-qin-8);
+      --fluid-lg-card: var(--bp-fluid-8);
+
+      --bp-9-at: 970;
+      --qgte-lg-page: var(--bp-qgte-9);
+      --qlt-lg-page: var(--bp-qlt-9);
+      --qin-lg-page: var(--bp-qin-9);
+      --fluid-lg-page: var(--bp-fluid-9);
+
+      /* if you are designing components larger than these, use stage breakpoints instead */
+      --bpu-typography-scalar: calc(
+        1.2 +
+        var(--qin-lg-card) * 0.05 +
+        var(--qin-lg-page) * 0.05
+      );
+    }
+
+    /* initialize fluidity */
+    @property --_bp-fluid-0-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-1-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-2-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-3-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-4-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-5-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-6-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-7-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-8-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-9-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-0-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-1-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-2-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-3-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-4-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-5-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-6-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-7-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-8-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-9-bp-else-0 { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-fluid-max-bp { syntax: "<number>"; initial-value: 0; inherits: false; }
+    /* create is-defined flags for each breakpoint from the configs and fluidity var. */
+    @property --bp-0-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-1-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-2-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-3-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-4-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-5-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-6-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-7-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-8-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bp-9-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    :where(
+      .breakpoint-system,
+      .bp-stage,
+      .bp-node
+    ) {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+
+      --bp-fluidity: var(--bp-fluid-all);
+      --bp-fluid-all: var(--bp-fluid-0)
+        var(--bp-fluid-1) var(--bp-fluid-2) var(--bp-fluid-3)
+        var(--bp-fluid-4) var(--bp-fluid-5) var(--bp-fluid-6)
+        var(--bp-fluid-7) var(--bp-fluid-8) var(--bp-fluid-9);
+      --bp-fluid-0: var(--bp-fluidity, );
+      --bp-fluid-1: var(--bp-fluidity, );
+      --bp-fluid-2: var(--bp-fluidity, );
+      --bp-fluid-3: var(--bp-fluidity, );
+      --bp-fluid-4: var(--bp-fluidity, );
+      --bp-fluid-5: var(--bp-fluidity, );
+      --bp-fluid-6: var(--bp-fluidity, );
+      --bp-fluid-7: var(--bp-fluidity, );
+      --bp-fluid-8: var(--bp-fluidity, );
+      --bp-fluid-9: var(--bp-fluidity, );
+
+      /* for each bp, turn it to simple bit flag indicating inclusion */
+      --_bp-fluid-0-0-else-initial: var(--bp-fluid-0) 0;
+      --_bp-fluid-1-0-else-initial: var(--bp-fluid-1) 0;
+      --_bp-fluid-2-0-else-initial: var(--bp-fluid-2) 0;
+      --_bp-fluid-3-0-else-initial: var(--bp-fluid-3) 0;
+      --_bp-fluid-4-0-else-initial: var(--bp-fluid-4) 0;
+      --_bp-fluid-5-0-else-initial: var(--bp-fluid-5) 0;
+      --_bp-fluid-6-0-else-initial: var(--bp-fluid-6) 0;
+      --_bp-fluid-7-0-else-initial: var(--bp-fluid-7) 0;
+      --_bp-fluid-8-0-else-initial: var(--bp-fluid-8) 0;
+      --_bp-fluid-9-0-else-initial: var(--bp-fluid-9) 0;
+
+      --_bp-fluid-0-flag: var(--_bp-fluid-0-0-else-initial, 1);
+      --_bp-fluid-1-flag: var(--_bp-fluid-1-0-else-initial, 1);
+      --_bp-fluid-2-flag: var(--_bp-fluid-2-0-else-initial, 1);
+      --_bp-fluid-3-flag: var(--_bp-fluid-3-0-else-initial, 1);
+      --_bp-fluid-4-flag: var(--_bp-fluid-4-0-else-initial, 1);
+      --_bp-fluid-5-flag: var(--_bp-fluid-5-0-else-initial, 1);
+      --_bp-fluid-6-flag: var(--_bp-fluid-6-0-else-initial, 1);
+      --_bp-fluid-7-flag: var(--_bp-fluid-7-0-else-initial, 1);
+      --_bp-fluid-8-flag: var(--_bp-fluid-8-0-else-initial, 1);
+      --_bp-fluid-9-flag: var(--_bp-fluid-9-0-else-initial, 1);
+
+      /* for each included bp, index it */
+      --_bp-fluid-0-bp-else-0: var(--_bp-fluid-0-0-else-initial, var(--bp-0-at));
+      --_bp-fluid-1-bp-else-0: var(--_bp-fluid-1-0-else-initial, var(--bp-1-at));
+      --_bp-fluid-2-bp-else-0: var(--_bp-fluid-2-0-else-initial, var(--bp-2-at));
+      --_bp-fluid-3-bp-else-0: var(--_bp-fluid-3-0-else-initial, var(--bp-3-at));
+      --_bp-fluid-4-bp-else-0: var(--_bp-fluid-4-0-else-initial, var(--bp-4-at));
+      --_bp-fluid-5-bp-else-0: var(--_bp-fluid-5-0-else-initial, var(--bp-5-at));
+      --_bp-fluid-6-bp-else-0: var(--_bp-fluid-6-0-else-initial, var(--bp-6-at));
+      --_bp-fluid-7-bp-else-0: var(--_bp-fluid-7-0-else-initial, var(--bp-7-at));
+      --_bp-fluid-8-bp-else-0: var(--_bp-fluid-8-0-else-initial, var(--bp-8-at));
+      --_bp-fluid-9-bp-else-0: var(--_bp-fluid-9-0-else-initial, var(--bp-9-at));
+      /* store the max */
+      --_bp-fluid-max-bp: calc(
+        max(
+          var(--_bp-fluid-0-bp-else-0),
+          var(--_bp-fluid-1-bp-else-0),
+          var(--_bp-fluid-2-bp-else-0),
+          var(--_bp-fluid-3-bp-else-0),
+          var(--_bp-fluid-4-bp-else-0),
+          var(--_bp-fluid-5-bp-else-0),
+          var(--_bp-fluid-6-bp-else-0),
+          var(--_bp-fluid-7-bp-else-0),
+          var(--_bp-fluid-8-bp-else-0),
+          var(--_bp-fluid-9-bp-else-0)
+        )
+      );
+      --bp-0-defined: calc(min(1, var(--bp-0-at)) * var(--_bp-fluid-0-flag));
+      --bp-1-defined: calc(min(1, var(--bp-1-at)) * var(--_bp-fluid-1-flag));
+      --bp-2-defined: calc(min(1, var(--bp-2-at)) * var(--_bp-fluid-2-flag));
+      --bp-3-defined: calc(min(1, var(--bp-3-at)) * var(--_bp-fluid-3-flag));
+      --bp-4-defined: calc(min(1, var(--bp-4-at)) * var(--_bp-fluid-4-flag));
+      --bp-5-defined: calc(min(1, var(--bp-5-at)) * var(--_bp-fluid-5-flag));
+      --bp-6-defined: calc(min(1, var(--bp-6-at)) * var(--_bp-fluid-6-flag));
+      --bp-7-defined: calc(min(1, var(--bp-7-at)) * var(--_bp-fluid-7-flag));
+      --bp-8-defined: calc(min(1, var(--bp-8-at)) * var(--_bp-fluid-8-flag));
+      --bp-9-defined: calc(min(1, var(--bp-9-at)) * var(--_bp-fluid-9-flag));
+    }
+
+    /* resolve query-on (ties into auto-measure-mixin) */
+    @property --bp-query-on { syntax: "<length>"; initial-value: 0px; inherits: false; }
+    @property --bp-query-on-n { syntax: "<number>"; initial-value: 0; inherits: false; }
+    :where(
+      .breakpoint-system,
+      .bp-stage,
+      .bp-node
+    ) {
+      /* using auto measure puts you in view-timeline compat table */
+      /* so it is safe for us to use @component style queries in this spceific case */
+
+      /* if only height is chosen, everything comes alive except the measuring device */
+      --bp-auto-measure: var(--bp-am-off);
+      /* API options are cyclic-intial if chosen, else space */
+      --bp-am-off: var(--bp-auto-measure, );
+      --bp-am-before: var(--bp-auto-measure, );
+      --bp-am-after: var(--bp-auto-measure, );
+      --bp-am-delegate: var(--bp-auto-measure, );
+      --bp-am-height: var(--bp-auto-measure, );
+
+      --_bp-am-mixin-export-main: initial; /* pixels for ease of user overrides */
+      --_bp-am-mixin-export-cross: initial; /* pixels for ease of user overrides */
+      /* auto measue tells breakpoint-system what size to query against (sets --bp-query-on) by
+      // measuring the size of the element itself. aspect-ratio gives you information that lets
+      // you fit an element INSIDE of this area and caps your bpu values (until the area is big
+      // enough to let the aspect-ratio confined axis grow again). So if am, then nest a-r els. 
+      */
+
+      --bp-query-on: var(--_bp-am-mixin-export-main, 100cqw);
+      /* todo: if this ^ is a number, use parent bpu to scale it - registered as len atm */
+      --bp-query-on-n: calc(10000 * tan(atan2(var(--bp-query-on), 10000px)));
+      /* todo: make ^ internal var instead */
+    }
+    @layer auto-measure-mixin {
+      @property --_bp-am-use-after-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+      @property --_bp-am-use-before-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+      @property --_bp-am-use-delegate-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+      @property --_bp-am-n-of-10k-eq-1px-of-length { syntax: "<number>"; initial-value: 0; inherits: false; }
+      @property --_bp-am-n-of-10k-eq-1px-of-cross { syntax: "<number>"; initial-value: 0; inherits: false; }
+      @keyframes --_bp-am-mixin-animation-main {
+        from { --_bp-am-n-of-10k-eq-1px-of-length: 0; }
+        to { --_bp-am-n-of-10k-eq-1px-of-length: 10000; }
+      }
+      @keyframes --_bp-am-mixin-animation-cross {
+        from { --_bp-am-n-of-10k-eq-1px-of-cross: 0; }
+        to { --_bp-am-n-of-10k-eq-1px-of-cross: 10000; }
+      }
+      :where(
+        .breakpoint-system,
+        .bp-stage,
+        .bp-node
+      ) {
+        --_bp-am-after-0-if-off: var(--bp-am-after) 0;
+        --_bp-am-use-after-flag: var(--_bp-am-after-0-if-off, 1);
+
+        --_bp-am-before-0-if-off: var(--bp-am-before) 0;
+        --_bp-am-use-before-flag: var(--_bp-am-before-0-if-off, 1);
+
+        --_bp-am-delegate-0-if-off: var(--bp-am-delegate) 0;
+        --_bp-am-use-delegate-flag: var(--_bp-am-delegate-0-if-off, 1);
+
+        --_bp-am-inline-if-not-height: inline var(--bp-am-height);
+        --_bp-am-use-axis: var(--_bp-am-inline-if-not-height, block);
+        --_bp-am-block-if-not-height: block var(--bp-am-height);
+        --_bp-am-use-cross: var(--_bp-am-inline-if-not-height, inline);
+
+        /* all spaces = off */
+        --_bp-am-space-if-off:
+          var(--bp-am-before)
+          var(--bp-am-after)
+          var(--bp-am-delegate);
+
+        overflow: var(--bp-am-off, revert-layer)
+          var(--_bp-am-space-if-off, auto);
+        position: var(--bp-am-off, revert-layer)
+          var(--_bp-am-space-if-off, relative);
+        /* Cross Multiply to solve for length
+        //  1px    animation sets: what amount of 0 to 10000 does 1px of 0px to len take?
+        // ----- = -----
+        //  len    10000
+        //
+        //  10000 * 1px / animation-timeline-value = len
+        */
+        --_bp-am-mixin-export-main: var(--bp-am-off, revert-layer)
+          var(--_bp-am-space-if-off, calc(10000 / var(--_bp-am-n-of-10k-eq-1px-of-length)) * 1px);
+        --_bp-am-mixin-export-cross: var(--bp-am-off, revert-layer)
+          var(--_bp-am-space-if-off, calc(10000 / var(--_bp-am-n-of-10k-eq-1px-of-cross)) * 1px);
+        timeline-scope: var(--bp-am-off, revert-layer)
+          var(--_bp-am-space-if-off, --_bp-am-mixin-timeline-main, --_bp-am-mixin-timeline-cross);
+        animation: var(--bp-am-off, revert-layer)
+          var(--_bp-am-space-if-off, --_bp-am-mixin-animation-main 1ms linear, --_bp-am-mixin-animation-cross 1ms linear);
+        animation-timeline: var(--bp-am-off, revert-layer)
+          var(--_bp-am-space-if-off, --_bp-am-mixin-timeline-main, --_bp-am-mixin-timeline-cross);
+        animation-range: var(--bp-am-off, revert-layer)
+          var(--_bp-am-space-if-off, entry 100% exit 100%);
+
+        /* Safari's @container style() is so unreliable/race-condition-y, I can't really ship this yet. */
+        @container style(--_bp-am-use-after-flag: 1) {
+          &::after { pointer-events: none;
+            content: ""; position: absolute;
+            right: 1px; bottom: 1px; width: 1px; height: 1px;
+            margin: 0px; padding: 0px; font-size: 0px; line-height: 0px;
+            view-timeline: --_bp-am-mixin-timeline-main var(--_bp-am-use-axis),
+              --_bp-am-mixin-timeline-cross var(--_bp-am-use-cross);
+          }
+        }
+        @container style(--_bp-am-use-before-flag: 1) {
+          &::before { pointer-events: none;
+            content: ""; position: absolute;
+            right: 1px; bottom: 1px; width: 1px; height: 1px;
+            margin: 0px; padding: 0px; font-size: 0px; line-height: 0px;
+            view-timeline: --_bp-am-mixin-timeline-main var(--_bp-am-use-axis),
+              --_bp-am-mixin-timeline-cross var(--_bp-am-use-cross);
+          }
+        }
+        @container style(--_bp-am-use-delegate-flag: 1) {
+          & > .bp-measurement-delegate { pointer-events: none;
+            position: absolute; border: none; outline: none;
+            right: 1px; bottom: 1px; width: 1px; height: 1px;
+            margin: 0px; padding: 0px; font-size: 0px; line-height: 0px;
+            view-timeline: --_bp-am-mixin-timeline-main var(--_bp-am-use-axis),
+              --_bp-am-mixin-timeline-cross var(--_bp-am-use-cross);
+          }
+        }
+      }
+    }
+
+    /* resolve local author emulation */
+    @property --bp-emulate { syntax: "<number>"; initial-value: -1; inherits: false; }
+    @property --_bp-author-emulation-target { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-author-emulation-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-author-scalar { syntax: "<number>"; initial-value: 1; inherits: false; }
+    :where(
+      .breakpoint-system,
+      .bp-stage,
+      .bp-node
+    ) {
+      /* numeric px width to render into current viewport, or a breakpoint index to use that as the target */
+      --bp-emulate: -1; /* -1 if local author emulation is off */
+
+      @supports (color: if(style(--PropJockey: breakpoint-system): #ff00c7)) {
+        --_bp-author-emulation-target: if(
+          style(--bp-emulate: -1): -1;
+          style(--bp-emulate: 0): var(--bp-0-at, 0);
+          style(--bp-emulate: 1): var(--bp-1-at, 0);
+          style(--bp-emulate: 2): var(--bp-2-at, 0);
+          style(--bp-emulate: 3): var(--bp-3-at, 0);
+          style(--bp-emulate: 4): var(--bp-4-at, 0);
+          style(--bp-emulate: 5): var(--bp-5-at, 0);
+          style(--bp-emulate: 6): var(--bp-6-at, 0);
+          style(--bp-emulate: 7): var(--bp-7-at, 0);
+          style(--bp-emulate: 8): var(--bp-8-at, 0);
+          style(--bp-emulate: 9): var(--bp-9-at, 0);
+          else: var(--bp-emulate);
+        );
+      }
+      @supports not (color: if(style(--ands: or-buts): #8100f0)) {
+        /* resolve to breakpoint value - bp 0 resolves to its basis */
+        /* last condition is > 9, the rest are === -X
+        // --_bp-author-emulation-target is either the render target or -1
+        */
+        --_bp-author-emulation-target: calc(
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) + 1
+          ) * 1000, 1))) * -1 +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 0
+          ) * 1000, 1))) * var(--bp-0-at, 0) +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 1
+          ) * 1000, 1))) * var(--bp-1-at, 0) +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 2
+          ) * 1000, 1))) * var(--bp-2-at, 0) +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 3
+          ) * 1000, 1))) * var(--bp-3-at, 0) +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 4
+          ) * 1000, 1))) * var(--bp-4-at, 0) +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 5
+          ) * 1000, 1))) * var(--bp-5-at, 0) +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 6
+          ) * 1000, 1))) * var(--bp-6-at, 0) +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 7
+          ) * 1000, 1))) * var(--bp-7-at, 0) +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 8
+          ) * 1000, 1))) * var(--bp-8-at, 0) +
+          (1 - abs(clamp(-1, (
+            var(--bp-emulate) - 9
+          ) * 1000, 1))) * var(--bp-9-at, 0) +
+          (clamp(0, (
+            var(--bp-emulate) - 9
+          ) * 1000, 1)) * var(--bp-emulate)
+        );
+      }
+
+      /* is there local emulation? */
+      --_bp-author-emulation-flag: calc(clamp(0, (var(--_bp-author-emulation-target) + 1) * 1000, 1));
+
+      /* scalar from current into author emulation. If not author emulating, the scalar is 1 */
+      --_bp-author-scalar: calc(
+        var(--_bp-author-emulation-flag) * (
+          var(--bp-query-on-n) / var(--_bp-author-emulation-target)
+        ) + (1 - var(--_bp-author-emulation-flag))
+      );
+    }
+
+    /* resolve current query scalar:
+    // global (based on user system font-size),
+    // local (based on viewport target set by author),
+    // inherited (based on nested author emulation)
+    */
+    @property --_bp-author-not-emulating { syntax: "<integer>"; initial-value: 1; inherits: false; }
+    @property --_bp-bigger-scaling-opt-in { syntax: "<number>"; initial-value: 1; inherits: false; }
+    @property --_bp-full-scaling-opt-in { syntax: "<number>"; initial-value: 1; inherits: false; }
+    @property --_bp-global-scalar { syntax: "<number>"; initial-value: 1; inherits: false; }
+    @property --_bp-current-query-scalar { syntax: "<number>"; initial-value: 1; inherits: false; }
+    :where(
+      .breakpoint-system,
+      .bp-stage,
+      .bp-node
+    ) {
+      /* local and inherited equal 1 */
+      --_bp-author-not-emulating: calc(
+        (1 - abs(clamp(-1, (var(--_bp-inherited-author-scalar) * 1000 - 1000) * 100000, 1))) *
+        (1 - abs(clamp(-1, (var(--_bp-author-scalar) * 1000 - 1000) * 100000, 1)))
+      );
+
+      /* options for --bp-user-em */
+      --bp-scaling-opt-out: 0;
+      --bp-bigger-scaling-opt-in: 1;
+      --bp-full-scaling-opt-in: 2;
+
+      /* --_bp-scaling-opt-out: 1; --bp-user-em === 0 */
+      --_bp-bigger-scaling-opt-in: calc(
+        ( var(--_bp-author-not-emulating) * max(var(--_bp-author-rem-basis), var(--_bp-nrem)) +
+          (1 - var(--_bp-author-not-emulating)) * max(16, var(--bp-emulate-rem, 16))
+        ) / (
+          var(--_bp-author-not-emulating) * var(--_bp-author-rem-basis) +
+          (1 - var(--_bp-author-not-emulating)) * 16
+        )
+      );
+      --_bp-full-scaling-opt-in: calc(
+        var(--_bp-author-not-emulating) * (var(--_bp-nrem) / var(--_bp-author-rem-basis)) +
+        (1 - var(--_bp-author-not-emulating)) * (var(--bp-emulate-rem, 16) / 16)
+      );
+      /* scalar from author's rem size to user's rem size (the magnification projected onto "pixel" values) */
+      /* --bp-user-em: var(--_bp-bigger-scaling-opt-in); inherit author's setting but recompute the meaning in context */
+      --_bp-global-scalar: calc(
+        (1 - abs(clamp(-1, (var(--bp-user-em)) * 100, 1))) +
+        (1 - abs(clamp(-1, (var(--bp-user-em) - 1) * 100, 1))) * var(--_bp-bigger-scaling-opt-in) +
+        (1 - abs(clamp(-1, (var(--bp-user-em) - 2) * 100, 1))) * var(--_bp-full-scaling-opt-in)
+      );
+
+      /* omit global if within emulation context so author's specifications are exact */
+      --_bp-current-query-scalar: calc(
+        var(--_bp-global-scalar) *
+        var(--_bp-inherited-author-scalar) *
+        var(--_bp-author-scalar)
+      );
+      /* --bp-remulate */
+    }
+
+    /* resolve queries; all = 0 if not included in author's --bp-fluidity setting */
+    @property --_bp-q-lowest-defined { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-0-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-1-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-2-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-3-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-4-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-5-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-6-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-7-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-8-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-9-is-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-0-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-1-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-2-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-3-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-4-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-5-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-6-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-7-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-8-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-9-is-biggest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-q-lower-bound { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-in-lowest-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-query-on-unemulated { syntax: "<number>"; initial-value: 0; inherits: false; }
+
+    @property --bp-qgte-0 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qgte-1 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qgte-2 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qgte-3 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qgte-4 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qgte-5 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qgte-6 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qgte-7 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qgte-8 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qgte-9 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+
+    @property --bp-qlt-0 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qlt-1 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qlt-2 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qlt-3 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qlt-4 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qlt-5 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qlt-6 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qlt-7 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qlt-8 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qlt-9 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+
+    @property --bp-qin-0 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qin-1 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qin-2 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qin-3 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qin-4 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qin-5 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qin-6 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qin-7 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qin-8 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    @property --bp-qin-9 { syntax: "<integer>"; initial-value: -1; inherits: false; }
+    :where(
+      .breakpoint-system,
+      .bp-stage,
+      .bp-node
+    ) {
+      --_bp-q-lowest-defined: calc(min(
+        var(--bp-0-defined) * var(--bp-0-at) + (1 - var(--bp-0-defined)) * 99999,
+        var(--bp-1-defined) * var(--bp-1-at) + (1 - var(--bp-1-defined)) * 99999,
+        var(--bp-2-defined) * var(--bp-2-at) + (1 - var(--bp-2-defined)) * 99999,
+        var(--bp-3-defined) * var(--bp-3-at) + (1 - var(--bp-3-defined)) * 99999,
+        var(--bp-4-defined) * var(--bp-4-at) + (1 - var(--bp-4-defined)) * 99999,
+        var(--bp-5-defined) * var(--bp-5-at) + (1 - var(--bp-5-defined)) * 99999,
+        var(--bp-6-defined) * var(--bp-6-at) + (1 - var(--bp-6-defined)) * 99999,
+        var(--bp-7-defined) * var(--bp-7-at) + (1 - var(--bp-7-defined)) * 99999,
+        var(--bp-8-defined) * var(--bp-8-at) + (1 - var(--bp-8-defined)) * 99999,
+        var(--bp-9-defined) * var(--bp-9-at) + (1 - var(--bp-9-defined)) * 99999
+      ));
+      --_bp-q-0-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-0-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-1-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-1-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-2-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-2-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-3-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-3-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-4-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-4-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-5-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-5-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-6-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-6-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-7-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-7-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-8-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-8-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-9-is-lowest-defined: calc(1 - abs(clamp(-1, (var(--bp-9-at) - var(--_bp-q-lowest-defined)) * 100000, 1)));
+      --_bp-q-0-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-0-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-1-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-1-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-2-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-2-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-3-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-3-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-4-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-4-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-5-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-5-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-6-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-6-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-7-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-7-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-8-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-8-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-9-is-biggest-defined: calc(1 - abs(clamp(-1, (var(--bp-9-at) - var(--_bp-fluid-max-bp)) * 100000, 1)));
+      --_bp-q-lower-bound: calc(max(
+        var(--bp-qgte-0) * var(--bp-0-at),
+        var(--bp-qgte-1) * var(--bp-1-at),
+        var(--bp-qgte-2) * var(--bp-2-at),
+        var(--bp-qgte-3) * var(--bp-3-at),
+        var(--bp-qgte-4) * var(--bp-4-at),
+        var(--bp-qgte-5) * var(--bp-5-at),
+        var(--bp-qgte-6) * var(--bp-6-at),
+        var(--bp-qgte-7) * var(--bp-7-at),
+        var(--bp-qgte-8) * var(--bp-8-at),
+        var(--bp-qgte-9) * var(--bp-9-at),
+        var(--_bp-q-lowest-defined)
+      ));
+      --_bp-in-lowest-defined: calc(1 - abs(clamp(-1, (var(--_bp-q-lowest-defined) - var(--_bp-q-lower-bound)) * 100000, 1)));
+
+      --_bp-query-on-unemulated: calc(round(var(--bp-query-on-n) / var(--_bp-current-query-scalar), 0.05));
+      /* if it's the lowest defined, it's always gte and never lt. If it's the biggest defined, in = gte */
+      --bp-qgte-0: calc(
+        var(--bp-0-defined) * (
+          var(--_bp-q-0-is-lowest-defined) + (1 - var(--_bp-q-0-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-0-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-0: calc(
+        var(--bp-0-defined) * (
+          (1 - var(--_bp-q-0-is-lowest-defined)) * (1 - var(--bp-qgte-0))
+        )
+      );
+      --bp-qin-0: calc(
+        var(--bp-0-defined) * (
+          (var(--_bp-q-0-is-biggest-defined) * var(--bp-qgte-0)) +
+          (1 - var(--_bp-q-0-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-0-at)) * 100000, 1)))
+        )
+      );
+
+      --bp-qgte-1: calc(
+        var(--bp-1-defined) * (
+          var(--_bp-q-1-is-lowest-defined) + (1 - var(--_bp-q-1-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-1-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-1: calc(
+        var(--bp-1-defined) * (
+          (1 - var(--_bp-q-1-is-lowest-defined)) * (1 - var(--bp-qgte-1))
+        )
+      );
+      --bp-qin-1: calc(
+        var(--bp-1-defined) * (
+          (var(--_bp-q-1-is-biggest-defined) * var(--bp-qgte-1)) +
+          (1 - var(--_bp-q-1-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-1-at)) * 100000, 1)))
+        )
+      );
+
+      --bp-qgte-2: calc(
+        var(--bp-2-defined) * (
+          var(--_bp-q-2-is-lowest-defined) + (1 - var(--_bp-q-2-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-2-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-2: calc(
+        var(--bp-2-defined) * (
+          (1 - var(--_bp-q-2-is-lowest-defined)) * (1 - var(--bp-qgte-2))
+        )
+      );
+      --bp-qin-2: calc(
+        var(--bp-2-defined) * (
+          (var(--_bp-q-2-is-biggest-defined) * var(--bp-qgte-2)) +
+          (1 - var(--_bp-q-2-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-2-at)) * 100000, 1)))
+        )
+      );
+
+      --bp-qgte-3: calc(
+        var(--bp-3-defined) * (
+          var(--_bp-q-3-is-lowest-defined) + (1 - var(--_bp-q-3-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-3-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-3: calc(
+        var(--bp-3-defined) * (
+          (1 - var(--_bp-q-3-is-lowest-defined)) * (1 - var(--bp-qgte-3))
+        )
+      );
+      --bp-qin-3: calc(
+        var(--bp-3-defined) * (
+          (var(--_bp-q-3-is-biggest-defined) * var(--bp-qgte-3)) +
+          (1 - var(--_bp-q-3-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-3-at)) * 100000, 1)))
+        )
+      );
+
+      --bp-qgte-4: calc(
+        var(--bp-4-defined) * (
+          var(--_bp-q-4-is-lowest-defined) + (1 - var(--_bp-q-4-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-4-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-4: calc(
+        var(--bp-4-defined) * (
+          (1 - var(--_bp-q-4-is-lowest-defined)) * (1 - var(--bp-qgte-4))
+        )
+      );
+      --bp-qin-4: calc(
+        var(--bp-4-defined) * (
+          (var(--_bp-q-4-is-biggest-defined) * var(--bp-qgte-4)) +
+          (1 - var(--_bp-q-4-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-4-at)) * 100000, 1)))
+        )
+      );
+
+      --bp-qgte-5: calc(
+        var(--bp-5-defined) * (
+          var(--_bp-q-5-is-lowest-defined) + (1 - var(--_bp-q-5-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-5-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-5: calc(
+        var(--bp-5-defined) * (
+          (1 - var(--_bp-q-5-is-lowest-defined)) * (1 - var(--bp-qgte-5))
+        )
+      );
+      --bp-qin-5: calc(
+        var(--bp-5-defined) * (
+          (var(--_bp-q-5-is-biggest-defined) * var(--bp-qgte-5)) +
+          (1 - var(--_bp-q-5-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-5-at)) * 100000, 1)))
+        )
+      );
+
+      --bp-qgte-6: calc(
+        var(--bp-6-defined) * (
+          var(--_bp-q-6-is-lowest-defined) + (1 - var(--_bp-q-6-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-6-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-6: calc(
+        var(--bp-6-defined) * (
+          (1 - var(--_bp-q-6-is-lowest-defined)) * (1 - var(--bp-qgte-6))
+        )
+      );
+      --bp-qin-6: calc(
+        var(--bp-6-defined) * (
+          (var(--_bp-q-6-is-biggest-defined) * var(--bp-qgte-6)) +
+          (1 - var(--_bp-q-6-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-6-at)) * 100000, 1)))
+        )
+      );
+
+      --bp-qgte-7: calc(
+        var(--bp-7-defined) * (
+          var(--_bp-q-7-is-lowest-defined) + (1 - var(--_bp-q-7-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-7-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-7: calc(
+        var(--bp-7-defined) * (
+          (1 - var(--_bp-q-7-is-lowest-defined)) * (1 - var(--bp-qgte-7))
+        )
+      );
+      --bp-qin-7: calc(
+        var(--bp-7-defined) * (
+          (var(--_bp-q-7-is-biggest-defined) * var(--bp-qgte-7)) +
+          (1 - var(--_bp-q-7-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-7-at)) * 100000, 1)))
+        )
+      );
+
+      --bp-qgte-8: calc(
+        var(--bp-8-defined) * (
+          var(--_bp-q-8-is-lowest-defined) + (1 - var(--_bp-q-8-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-8-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-8: calc(
+        var(--bp-8-defined) * (
+          (1 - var(--_bp-q-8-is-lowest-defined)) * (1 - var(--bp-qgte-8))
+        )
+      );
+      --bp-qin-8: calc(
+        var(--bp-8-defined) * (
+          (var(--_bp-q-8-is-biggest-defined) * var(--bp-qgte-8)) +
+          (1 - var(--_bp-q-8-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-8-at)) * 100000, 1)))
+        )
+      );
+
+      --bp-qgte-9: calc(
+        var(--bp-9-defined) * (
+          var(--_bp-q-9-is-lowest-defined) + (1 - var(--_bp-q-9-is-lowest-defined)) *
+          (1 + clamp(-1, (
+            var(--_bp-query-on-unemulated) - var(--bp-9-at)
+          ) * 1000, 0))
+        )
+      );
+      --bp-qlt-9: calc(
+        var(--bp-9-defined) * (
+          (1 - var(--_bp-q-9-is-lowest-defined)) * (1 - var(--bp-qgte-9))
+        )
+      );
+      --bp-qin-9: calc(
+        var(--bp-9-defined) * (
+          (var(--_bp-q-9-is-biggest-defined) * var(--bp-qgte-9)) +
+          (1 - var(--_bp-q-9-is-biggest-defined)) *
+          (1 - abs(clamp(-1, (var(--_bp-q-lower-bound) - var(--bp-9-at)) * 100000, 1)))
+        )
+      );
+    }
+
+    /* resolve aspect-ratio handling, default cross cap setting to using auto-measure's cross export or 100cqh */
+    @property --_bp-ar-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --bpu-main-max { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --bpu-main-shrink-to { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --bpu-cross-basis { syntax: "<length>"; initial-value: 0px; inherits: false; }
+    @property --_bp-cross-length-n { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-ar-main-capped { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --_bp-ar-fit-cross { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-ar-main-after-fit-cross { syntax: "<number>"; initial-value: 0; inherits: false; }
+    @property --bpu-main-result-n { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bpu-main-result { syntax: "<length>"; initial-value: 0px; inherits: true; }
+    @property --bpu-cross-result-n { syntax: "<number>"; initial-value: 0; inherits: true; }
+    @property --bpu-cross-result { syntax: "<length>"; initial-value: 0px; inherits: true; }
+    :where(
+      .breakpoint-system,
+      .bp-stage,
+      .bp-node
+    ) {
+      --bpu-aspect-ratio: 0; /* not registered so the user doesn't have to write calc() to use it */
+      --_bp-ar-flag: calc(clamp(0, (var(--bpu-aspect-ratio, 0)) * 100000, 1));
+
+      --bpu-main-max: 0; /* number - might cause main query-on basis to shrink, might cause cross basis to shrink */
+      --bpu-main-shrink-to: calc(
+        min(var(--_bp-q-lower-bound), var(--_bp-query-on-unemulated))
+      ); /* number - forces cross basis to grow but won't cause main to overflow the current query-on basis */
+
+      --bpu-cross-basis: var(--_bp-am-mixin-export-cross, 100cqh); /* user can override if using am */
+      --_bp-cross-length-n: calc(10000 * tan(atan2(var(--bpu-cross-basis), 10000px)));
+
+      /* if cap is specifid, it intentionally affects bpu even if not using aspect ratio */
+      --_bp-ar-main-capped: calc(
+        min(1, var(--bpu-main-max)) * min(var(--bpu-main-max) * var(--_bp-current-query-scalar), var(--bp-query-on-n)) +
+        (1 - min(1, var(--bpu-main-max))) * var(--bp-query-on-n)
+      );
+
+      /* if query-on-n / --bpu-aspect-ratio > --_bp-cross-length-n */
+      --_bp-ar-fit-cross: calc(var(--_bp-ar-flag) * -1 * max(-1, min(0, -100000 * (
+        (var(--_bp-ar-main-capped) / (
+          var(--_bp-ar-flag) * var(--bpu-aspect-ratio, 0) +
+          (1 - var(--_bp-ar-flag))
+        )) -
+        var(--_bp-cross-length-n)
+      ))));
+
+      --_bp-ar-main-after-fit-cross: calc(
+        var(--_bp-ar-fit-cross) * (
+          var(--_bp-cross-length-n) * (var(--bpu-aspect-ratio, 0))
+        ) +
+        (1 - var(--_bp-ar-fit-cross)) * var(--_bp-ar-main-capped)
+      );
+
+      /* then use width = --_bp-cross-length-n * --bpu-aspect-ratio */
+      /* else width = query-on-n */
+      /* default the public api result to the query-on value if not used */
+      --bpu-main-result-n: calc(
+        min(
+          var(--bp-query-on-n),
+          max(var(--_bp-ar-main-after-fit-cross), var(--bpu-main-shrink-to) * var(--_bp-current-query-scalar))
+        )
+      );
+      --bpu-main-result: calc(var(--bpu-main-result-n) * 1px);
+
+      /* default the public api result to 0 if not used */
+      --bpu-cross-result-n: calc(
+        var(--_bp-ar-flag) *
+        var(--bpu-main-result-n) / (
+          var(--_bp-ar-flag) * var(--bpu-aspect-ratio, 0) +
+          (1 - var(--_bp-ar-flag))
+        )
+      );
+      --bpu-cross-result: calc(var(--bpu-cross-result-n) * 1px);
+    }
+
+    /* Breakpoint Unit */
+    @property --bpu-1rem-n { syntax: "<number>"; initial-value: 16; inherits: true; }
+    @property --bpu-1rem { syntax: "<length>"; initial-value: 16px; inherits: true; }
+
+    @function --bpu-px(--v <number>) returns <length> { result: calc(var(--bpu-1px) * var(--v)); }
+    @function --bpu-n(--v) { result: calc(var(--bpu-1) * var(--v)); }
+
+    @property --bpu-1 { syntax: "<number>"; initial-value: 1; inherits: true; }
+    @property --bpu-3 { syntax: "<number>"; initial-value: 3; inherits: true; }
+    @property --bpu-5 { syntax: "<number>"; initial-value: 5; inherits: true; }
+    @property --bpu-15 { syntax: "<number>"; initial-value: 15; inherits: true; }
+    @property --bpu-25 { syntax: "<number>"; initial-value: 25; inherits: true; }
+    @property --bpu-35 { syntax: "<number>"; initial-value: 35; inherits: true; }
+    @property --bpu-45 { syntax: "<number>"; initial-value: 45; inherits: true; }
+
+    @property --bpu-2 { syntax: "<number>"; initial-value: 2; inherits: true; }
+    @property --bpu-4 { syntax: "<number>"; initial-value: 4; inherits: true; }
+    @property --bpu-6 { syntax: "<number>"; initial-value: 6; inherits: true; }
+    @property --bpu-8 { syntax: "<number>"; initial-value: 8; inherits: true; }
+    @property --bpu-10 { syntax: "<number>"; initial-value: 10; inherits: true; }
+    @property --bpu-12 { syntax: "<number>"; initial-value: 12; inherits: true; }
+    @property --bpu-14 { syntax: "<number>"; initial-value: 14; inherits: true; }
+    @property --bpu-16 { syntax: "<number>"; initial-value: 16; inherits: true; }
+    @property --bpu-18 { syntax: "<number>"; initial-value: 18; inherits: true; }
+    @property --bpu-20 { syntax: "<number>"; initial-value: 20; inherits: true; }
+    @property --bpu-22 { syntax: "<number>"; initial-value: 22; inherits: true; }
+    @property --bpu-24 { syntax: "<number>"; initial-value: 24; inherits: true; }
+    @property --bpu-26 { syntax: "<number>"; initial-value: 26; inherits: true; }
+    @property --bpu-28 { syntax: "<number>"; initial-value: 28; inherits: true; }
+    @property --bpu-30 { syntax: "<number>"; initial-value: 30; inherits: true; }
+    @property --bpu-32 { syntax: "<number>"; initial-value: 32; inherits: true; }
+    @property --bpu-34 { syntax: "<number>"; initial-value: 34; inherits: true; }
+    @property --bpu-36 { syntax: "<number>"; initial-value: 36; inherits: true; }
+    @property --bpu-38 { syntax: "<number>"; initial-value: 38; inherits: true; }
+    @property --bpu-40 { syntax: "<number>"; initial-value: 40; inherits: true; }
+    @property --bpu-42 { syntax: "<number>"; initial-value: 42; inherits: true; }
+    @property --bpu-44 { syntax: "<number>"; initial-value: 44; inherits: true; }
+    @property --bpu-46 { syntax: "<number>"; initial-value: 46; inherits: true; }
+    @property --bpu-48 { syntax: "<number>"; initial-value: 48; inherits: true; }
+    @property --bpu-50 { syntax: "<number>"; initial-value: 50; inherits: true; }
+
+    @property --bpu-56 { syntax: "<number>"; initial-value: 56; inherits: true; }
+    @property --bpu-64 { syntax: "<number>"; initial-value: 64; inherits: true; }
+    @property --bpu-72 { syntax: "<number>"; initial-value: 72; inherits: true; }
+    @property --bpu-80 { syntax: "<number>"; initial-value: 80; inherits: true; }
+    @property --bpu-96 { syntax: "<number>"; initial-value: 96; inherits: true; }
+    @property --bpu-128 { syntax: "<number>"; initial-value: 128; inherits: true; }
+    @property --bpu-160 { syntax: "<number>"; initial-value: 160; inherits: true; }
+
+    @property --bpu-1px { syntax: "<length>"; initial-value: 1px; inherits: true; }
+    @property --bpu-3px { syntax: "<length>"; initial-value: 3px; inherits: true; }
+    @property --bpu-5px { syntax: "<length>"; initial-value: 5px; inherits: true; }
+    @property --bpu-15px { syntax: "<length>"; initial-value: 15px; inherits: true; }
+    @property --bpu-25px { syntax: "<length>"; initial-value: 25px; inherits: true; }
+    @property --bpu-35px { syntax: "<length>"; initial-value: 35px; inherits: true; }
+    @property --bpu-45px { syntax: "<length>"; initial-value: 45px; inherits: true; }
+
+    @property --bpu-2px { syntax: "<length>"; initial-value: 2px; inherits: true; }
+    @property --bpu-4px { syntax: "<length>"; initial-value: 4px; inherits: true; }
+    @property --bpu-6px { syntax: "<length>"; initial-value: 6px; inherits: true; }
+    @property --bpu-8px { syntax: "<length>"; initial-value: 8px; inherits: true; }
+    @property --bpu-10px { syntax: "<length>"; initial-value: 10px; inherits: true; }
+    @property --bpu-12px { syntax: "<length>"; initial-value: 12px; inherits: true; }
+    @property --bpu-14px { syntax: "<length>"; initial-value: 14px; inherits: true; }
+    @property --bpu-16px { syntax: "<length>"; initial-value: 16px; inherits: true; }
+    @property --bpu-18px { syntax: "<length>"; initial-value: 18px; inherits: true; }
+    @property --bpu-20px { syntax: "<length>"; initial-value: 20px; inherits: true; }
+    @property --bpu-22px { syntax: "<length>"; initial-value: 22px; inherits: true; }
+    @property --bpu-24px { syntax: "<length>"; initial-value: 24px; inherits: true; }
+    @property --bpu-26px { syntax: "<length>"; initial-value: 26px; inherits: true; }
+    @property --bpu-28px { syntax: "<length>"; initial-value: 28px; inherits: true; }
+    @property --bpu-30px { syntax: "<length>"; initial-value: 30px; inherits: true; }
+    @property --bpu-32px { syntax: "<length>"; initial-value: 32px; inherits: true; }
+    @property --bpu-34px { syntax: "<length>"; initial-value: 34px; inherits: true; }
+    @property --bpu-36px { syntax: "<length>"; initial-value: 36px; inherits: true; }
+    @property --bpu-38px { syntax: "<length>"; initial-value: 38px; inherits: true; }
+    @property --bpu-40px { syntax: "<length>"; initial-value: 40px; inherits: true; }
+    @property --bpu-42px { syntax: "<length>"; initial-value: 42px; inherits: true; }
+    @property --bpu-44px { syntax: "<length>"; initial-value: 44px; inherits: true; }
+    @property --bpu-46px { syntax: "<length>"; initial-value: 46px; inherits: true; }
+    @property --bpu-48px { syntax: "<length>"; initial-value: 48px; inherits: true; }
+    @property --bpu-50px { syntax: "<length>"; initial-value: 50px; inherits: true; }
+
+    @property --bpu-56px { syntax: "<length>"; initial-value: 56px; inherits: true; }
+    @property --bpu-64px { syntax: "<length>"; initial-value: 64px; inherits: true; }
+    @property --bpu-72px { syntax: "<length>"; initial-value: 72px; inherits: true; }
+    @property --bpu-80px { syntax: "<length>"; initial-value: 80px; inherits: true; }
+    @property --bpu-96px { syntax: "<length>"; initial-value: 96px; inherits: true; }
+    @property --bpu-128px { syntax: "<length>"; initial-value: 128px; inherits: true; }
+    @property --bpu-160px { syntax: "<length>"; initial-value: 160px; inherits: true; }
+
+    @property --bpu-typography-basis-n { syntax: "<number>"; initial-value: 1; inherits: true; }
+    @property --bpu-xxs-n { syntax: "<number>"; initial-value: 12; inherits: true; }
+    @property --bpu-xs-n { syntax: "<number>"; initial-value: 14; inherits: true; }
+    @property --bpu-sm-n { syntax: "<number>"; initial-value: 16; inherits: true; }
+    @property --bpu-md-n { syntax: "<number>"; initial-value: 19.2; inherits: true; }
+    @property --bpu-lg-n { syntax: "<number>"; initial-value: 23.04; inherits: true; }
+    @property --bpu-xl-n { syntax: "<number>"; initial-value: 27.65; inherits: true; }
+    @property --bpu-xxl-n { syntax: "<number>"; initial-value: 33.18; inherits: true; }
+    @property --bpu-xxxl-n { syntax: "<number>"; initial-value: 39.81; inherits: true; }
+
+    @property --bpu-typography-basis { syntax: "<length>"; initial-value: 1px; inherits: true; }
+    @property --bpu-xxs { syntax: "<length>"; initial-value: 12px; inherits: true; }
+    @property --bpu-xs { syntax: "<length>"; initial-value: 14px; inherits: true; }
+    @property --bpu-sm { syntax: "<length>"; initial-value: 16px; inherits: true; }
+    @property --bpu-md { syntax: "<length>"; initial-value: 19.2px; inherits: true; }
+    @property --bpu-lg { syntax: "<length>"; initial-value: 23.04px; inherits: true; }
+    @property --bpu-xl { syntax: "<length>"; initial-value: 27.65px; inherits: true; }
+    @property --bpu-xxl { syntax: "<length>"; initial-value: 33.18px; inherits: true; }
+    @property --bpu-xxxl { syntax: "<length>"; initial-value: 39.81px; inherits: true; }
+    :where(
+      .breakpoint-system,
+      .bp-stage,
+      .bp-node
+    ) {
+      /* --_bp-fluid-scalar */
+      --bpu-1: calc(var(--bpu-main-result-n) / var(--_bp-q-lower-bound));
+      --bpu-3: calc(var(--bpu-1) * 3);
+      --bpu-5: calc(var(--bpu-1) * 5);
+      --bpu-15: calc(var(--bpu-1) * 15);
+      --bpu-25: calc(var(--bpu-1) * 25);
+      --bpu-35: calc(var(--bpu-1) * 35);
+      --bpu-45: calc(var(--bpu-1) * 45);
+
+      --bpu-2: calc(var(--bpu-1) * 2);
+      --bpu-4: calc(var(--bpu-1) * 4);
+      --bpu-6: calc(var(--bpu-1) * 6);
+      --bpu-8: calc(var(--bpu-1) * 8);
+      --bpu-10: calc(var(--bpu-1) * 10);
+      --bpu-12: calc(var(--bpu-1) * 12);
+      --bpu-14: calc(var(--bpu-1) * 14);
+      --bpu-16: calc(var(--bpu-1) * 16);
+      --bpu-18: calc(var(--bpu-1) * 18);
+      --bpu-20: calc(var(--bpu-1) * 20);
+      --bpu-22: calc(var(--bpu-1) * 22);
+      --bpu-24: calc(var(--bpu-1) * 24);
+      --bpu-26: calc(var(--bpu-1) * 26);
+      --bpu-28: calc(var(--bpu-1) * 28);
+      --bpu-30: calc(var(--bpu-1) * 30);
+      --bpu-32: calc(var(--bpu-1) * 32);
+      --bpu-34: calc(var(--bpu-1) * 34);
+      --bpu-36: calc(var(--bpu-1) * 36);
+      --bpu-38: calc(var(--bpu-1) * 38);
+      --bpu-40: calc(var(--bpu-1) * 40);
+      --bpu-42: calc(var(--bpu-1) * 42);
+      --bpu-44: calc(var(--bpu-1) * 44);
+      --bpu-46: calc(var(--bpu-1) * 46);
+      --bpu-48: calc(var(--bpu-1) * 48);
+      --bpu-50: calc(var(--bpu-1) * 50);
+
+      --bpu-56: calc(var(--bpu-1) * 56);
+      --bpu-64: calc(var(--bpu-1) * 64);
+      --bpu-72: calc(var(--bpu-1) * 72);
+      --bpu-80: calc(var(--bpu-1) * 80);
+      --bpu-96: calc(var(--bpu-1) * 96);
+      --bpu-128: calc(var(--bpu-1) * 128);
+      --bpu-160: calc(var(--bpu-1) * 160);
+
+      --bpu-1px: calc(var(--bpu-1) * 1px);
+      --bpu-3px: calc(var(--bpu-1) * 3px);
+      --bpu-5px: calc(var(--bpu-1) * 5px);
+      --bpu-15px: calc(var(--bpu-1) * 15px);
+      --bpu-25px: calc(var(--bpu-1) * 25px);
+      --bpu-35px: calc(var(--bpu-1) * 35px);
+      --bpu-45px: calc(var(--bpu-1) * 45px);
+
+      --bpu-2px: calc(var(--bpu-1) * 2px);
+      --bpu-4px: calc(var(--bpu-1) * 4px);
+      --bpu-6px: calc(var(--bpu-1) * 6px);
+      --bpu-8px: calc(var(--bpu-1) * 8px);
+      --bpu-10px: calc(var(--bpu-1) * 10px);
+      --bpu-12px: calc(var(--bpu-1) * 12px);
+      --bpu-14px: calc(var(--bpu-1) * 14px);
+      --bpu-16px: calc(var(--bpu-1) * 16px);
+      --bpu-18px: calc(var(--bpu-1) * 18px);
+      --bpu-20px: calc(var(--bpu-1) * 20px);
+      --bpu-22px: calc(var(--bpu-1) * 22px);
+      --bpu-24px: calc(var(--bpu-1) * 24px);
+      --bpu-26px: calc(var(--bpu-1) * 26px);
+      --bpu-28px: calc(var(--bpu-1) * 28px);
+      --bpu-30px: calc(var(--bpu-1) * 30px);
+      --bpu-32px: calc(var(--bpu-1) * 32px);
+      --bpu-34px: calc(var(--bpu-1) * 34px);
+      --bpu-36px: calc(var(--bpu-1) * 36px);
+      --bpu-38px: calc(var(--bpu-1) * 38px);
+      --bpu-40px: calc(var(--bpu-1) * 40px);
+      --bpu-42px: calc(var(--bpu-1) * 42px);
+      --bpu-44px: calc(var(--bpu-1) * 44px);
+      --bpu-46px: calc(var(--bpu-1) * 46px);
+      --bpu-48px: calc(var(--bpu-1) * 48px);
+      --bpu-50px: calc(var(--bpu-1) * 50px);
+
+      --bpu-56px: calc(var(--bpu-1) * 56px);
+      --bpu-64px: calc(var(--bpu-1) * 64px);
+      --bpu-72px: calc(var(--bpu-1) * 72px);
+      --bpu-80px: calc(var(--bpu-1) * 80px);
+      --bpu-96px: calc(var(--bpu-1) * 96px);
+      --bpu-128px: calc(var(--bpu-1) * 128px);
+      --bpu-160px: calc(var(--bpu-1) * 160px);
+
+      /* bpu-1rem !== 1rem if user scaling and author opted-out. Also changes with emulation. */
+      --bpu-1rem-n: calc(var(--bpu-1) * var(--_bp-author-rem-basis));
+      --bpu-1rem: calc(var(--bpu-1rem-n) * 1px);
+
+      /* Fluid, breakpoint-aware typography sizes. */
+      --bpu-typography-basis-n: calc(
+        var(--_bp-in-lowest-defined) * max(var(--_bp-current-query-scalar), var(--bpu-1)) +
+        (1 - var(--_bp-in-lowest-defined)) * var(--bpu-1)
+      );
+      --bpu-xxs-n: calc(var(--bpu-typography-basis-n) * 12);
+      --bpu-xs-n: calc(var(--bpu-typography-basis-n) * 14);
+      --bpu-sm-n: calc(var(--bpu-typography-basis-n) * 16);
+      --bpu-md-n: calc(var(--bpu-sm-n) * var(--bpu-typography-scalar));
+      --bpu-lg-n: calc(var(--bpu-md-n) * var(--bpu-typography-scalar));
+      --bpu-xl-n: calc(var(--bpu-lg-n) * var(--bpu-typography-scalar));
+      --bpu-xxl-n: calc(var(--bpu-xl-n) * var(--bpu-typography-scalar));
+      --bpu-xxxl-n: calc(var(--bpu-xxl-n) * var(--bpu-typography-scalar));
+
+      --bpu-typography-basis: calc(var(--bpu-typography-basis-n) * 1px);
+      --bpu-xxs: calc(var(--bpu-xxs-n) * 1px);
+      --bpu-xs: calc(var(--bpu-xs-n) * 1px);
+      --bpu-sm: calc(var(--bpu-sm-n) * 1px);
+      --bpu-md: calc(var(--bpu-md-n) * 1px);
+      --bpu-lg: calc(var(--bpu-lg-n) * 1px);
+      --bpu-xl: calc(var(--bpu-xl-n) * 1px);
+      --bpu-xxl: calc(var(--bpu-xxl-n) * 1px);
+      --bpu-xxxl: calc(var(--bpu-xxxl-n) * 1px);
+    }
+
+    /* Set up inherited breakpoint units and inherited emulation scalar info */
+    @property --_bp-handoff { syntax: "<integer>"; initial-value: 0; inherits: true; }
+    @property --_bp-inherited-author-scalar { syntax: "<number>"; initial-value: 1; inherits: false; }
+    @property --_bp-inherited-author-emulation-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+    @property --_bp-A-inherited-author-scalar { syntax: "<number>"; initial-value: 1; inherits: true; }
+    @property --_bp-A-inherited-author-emulation-flag { syntax: "<integer>"; initial-value: 0; inherits: true; }
+    @property --_bp-B-inherited-author-scalar { syntax: "<number>"; initial-value: 1; inherits: true; }
+    @property --_bp-B-inherited-author-emulation-flag { syntax: "<integer>"; initial-value: 0; inherits: true; }
+    @property --_bp-ibpu-1 { syntax: "<number>"; initial-value: 1; inherits: true; }
+    @property --_bp-A-ibpu-1 { syntax: "<number>"; initial-value: 1; inherits: true; }
+    @property --_bp-B-ibpu-1 { syntax: "<number>"; initial-value: 1; inherits: true; }
+    /* Working @container style() check. Chrome 111 (+1 because of Opera 97 flag) only, Safari 18 - 26 are broken, firefox nyi */
+    @supports (background: paint(for-chromium)) and (animation-composition: add) {
+      :where(
+        .breakpoint-system,
+        .bp-stage,
+        .bp-node
+      ) {
+        @container style(--_bp-handoff: 0) {
+          /* set A, ref B */
+          --_bp-A-inherited-author-scalar: var(--_bp-author-scalar);
+          --_bp-A-inherited-author-emulation-flag: var(--_bp-author-emulation-flag);
+
+          --_bp-inherited-author-scalar: var(--_bp-B-inherited-author-scalar);
+          --_bp-inherited-author-emulation-flag: var(--_bp-B-inherited-author-emulation-flag);
+
+          --_bp-A-ibpu-1: var(--bpu-1);
+          --_bp-ibpu-1: var(--_bp-B-ibpu-1);
+
+          /* next */
+          --_bp-handoff: 1;
+        }
+        @container style(--_bp-handoff: 1) {
+          /* set B, ref A */
+          --_bp-B-inherited-author-scalar: var(--_bp-author-scalar);
+          --_bp-B-inherited-author-emulation-flag: var(--_bp-author-emulation-flag);
+
+          --_bp-inherited-author-scalar: var(--_bp-A-inherited-author-scalar);
+          --_bp-inherited-author-emulation-flag: var(--_bp-A-inherited-author-emulation-flag);
+
+          --_bp-B-ibpu-1: var(--bpu-1);
+          --_bp-ibpu-1: var(--_bp-A-ibpu-1);
+
+          /* next */
+          --_bp-handoff: 0;
+        }
+      }
+    }
+    @supports not ((background: paint(for-chromium)) and (animation-composition: add)) {
+      :where(
+        .breakpoint-system,
+        .bp-stage,
+        .bp-node
+      ) {
+        &:not(& &),
+        & & &:not(& & & &),
+        & & & & &:not(& & & & & &),
+        & & & & & & &:not(& & & & & & & &) {
+          /* set A, ref B */
+          --_bp-A-inherited-author-scalar: var(--_bp-author-scalar);
+          --_bp-A-inherited-author-emulation-flag: var(--_bp-author-emulation-flag);
+
+          --_bp-inherited-author-scalar: var(--_bp-B-inherited-author-scalar);
+          --_bp-inherited-author-emulation-flag: var(--_bp-B-inherited-author-emulation-flag);
+
+          --_bp-A-ibpu-1: var(--bpu-1);
+          --_bp-ibpu-1: var(--_bp-B-ibpu-1);
+
+          /* next */
+          --_bp-handoff: 1;
+        }
+        & &:not(& & &),
+        & & & &:not(& & & & &),
+        & & & & & &:not(& & & & & & &),
+        & & & & & & & &:not(& & & & & & & & &) {
+          /* set B, ref A */
+          --_bp-B-inherited-author-scalar: var(--_bp-author-scalar);
+          --_bp-B-inherited-author-emulation-flag: var(--_bp-author-emulation-flag);
+
+          --_bp-inherited-author-scalar: var(--_bp-A-inherited-author-scalar);
+          --_bp-inherited-author-emulation-flag: var(--_bp-A-inherited-author-emulation-flag);
+
+          --_bp-B-ibpu-1: var(--bpu-1);
+          --_bp-ibpu-1: var(--_bp-A-ibpu-1);
+
+          /* next */
+          --_bp-handoff: 0;
+        }
+      }
+    }
+
+    /* use the inherited bpu-1 to build out the full set */
+    @property --ibpu-1rem-n { syntax: "<number>"; initial-value: 16; inherits: true; }
+    @property --ibpu-1rem { syntax: "<length>"; initial-value: 16px; inherits: true; }
+
+    @function --ibpu-px(--v <number>) returns <length> { result: calc(var(--ibpu-1px) * var(--v)); }
+    @function --ibpu-n(--v) { result: calc(var(--ibpu-1) * var(--v)); }
+
+    @property --ibpu-1 { syntax: "<number>"; initial-value: 1; inherits: true; }
+    @property --ibpu-3 { syntax: "<number>"; initial-value: 3; inherits: true; }
+    @property --ibpu-5 { syntax: "<number>"; initial-value: 5; inherits: true; }
+    @property --ibpu-15 { syntax: "<number>"; initial-value: 15; inherits: true; }
+    @property --ibpu-25 { syntax: "<number>"; initial-value: 25; inherits: true; }
+    @property --ibpu-35 { syntax: "<number>"; initial-value: 35; inherits: true; }
+    @property --ibpu-45 { syntax: "<number>"; initial-value: 45; inherits: true; }
+
+    @property --ibpu-2 { syntax: "<number>"; initial-value: 2; inherits: true; }
+    @property --ibpu-4 { syntax: "<number>"; initial-value: 4; inherits: true; }
+    @property --ibpu-6 { syntax: "<number>"; initial-value: 6; inherits: true; }
+    @property --ibpu-8 { syntax: "<number>"; initial-value: 8; inherits: true; }
+    @property --ibpu-10 { syntax: "<number>"; initial-value: 10; inherits: true; }
+    @property --ibpu-12 { syntax: "<number>"; initial-value: 12; inherits: true; }
+    @property --ibpu-14 { syntax: "<number>"; initial-value: 14; inherits: true; }
+    @property --ibpu-16 { syntax: "<number>"; initial-value: 16; inherits: true; }
+    @property --ibpu-18 { syntax: "<number>"; initial-value: 18; inherits: true; }
+    @property --ibpu-20 { syntax: "<number>"; initial-value: 20; inherits: true; }
+    @property --ibpu-22 { syntax: "<number>"; initial-value: 22; inherits: true; }
+    @property --ibpu-24 { syntax: "<number>"; initial-value: 24; inherits: true; }
+    @property --ibpu-26 { syntax: "<number>"; initial-value: 26; inherits: true; }
+    @property --ibpu-28 { syntax: "<number>"; initial-value: 28; inherits: true; }
+    @property --ibpu-30 { syntax: "<number>"; initial-value: 30; inherits: true; }
+    @property --ibpu-32 { syntax: "<number>"; initial-value: 32; inherits: true; }
+    @property --ibpu-34 { syntax: "<number>"; initial-value: 34; inherits: true; }
+    @property --ibpu-36 { syntax: "<number>"; initial-value: 36; inherits: true; }
+    @property --ibpu-38 { syntax: "<number>"; initial-value: 38; inherits: true; }
+    @property --ibpu-40 { syntax: "<number>"; initial-value: 40; inherits: true; }
+    @property --ibpu-42 { syntax: "<number>"; initial-value: 42; inherits: true; }
+    @property --ibpu-44 { syntax: "<number>"; initial-value: 44; inherits: true; }
+    @property --ibpu-46 { syntax: "<number>"; initial-value: 46; inherits: true; }
+    @property --ibpu-48 { syntax: "<number>"; initial-value: 48; inherits: true; }
+    @property --ibpu-50 { syntax: "<number>"; initial-value: 50; inherits: true; }
+
+    @property --ibpu-56 { syntax: "<number>"; initial-value: 56; inherits: true; }
+    @property --ibpu-64 { syntax: "<number>"; initial-value: 64; inherits: true; }
+    @property --ibpu-72 { syntax: "<number>"; initial-value: 72; inherits: true; }
+    @property --ibpu-80 { syntax: "<number>"; initial-value: 80; inherits: true; }
+    @property --ibpu-96 { syntax: "<number>"; initial-value: 96; inherits: true; }
+    @property --ibpu-128 { syntax: "<number>"; initial-value: 128; inherits: true; }
+    @property --ibpu-160 { syntax: "<number>"; initial-value: 160; inherits: true; }
+
+    @property --ibpu-1px { syntax: "<length>"; initial-value: 1px; inherits: true; }
+    @property --ibpu-3px { syntax: "<length>"; initial-value: 3px; inherits: true; }
+    @property --ibpu-5px { syntax: "<length>"; initial-value: 5px; inherits: true; }
+    @property --ibpu-15px { syntax: "<length>"; initial-value: 15px; inherits: true; }
+    @property --ibpu-25px { syntax: "<length>"; initial-value: 25px; inherits: true; }
+    @property --ibpu-35px { syntax: "<length>"; initial-value: 35px; inherits: true; }
+    @property --ibpu-45px { syntax: "<length>"; initial-value: 45px; inherits: true; }
+
+    @property --ibpu-2px { syntax: "<length>"; initial-value: 2px; inherits: true; }
+    @property --ibpu-4px { syntax: "<length>"; initial-value: 4px; inherits: true; }
+    @property --ibpu-6px { syntax: "<length>"; initial-value: 6px; inherits: true; }
+    @property --ibpu-8px { syntax: "<length>"; initial-value: 8px; inherits: true; }
+    @property --ibpu-10px { syntax: "<length>"; initial-value: 10px; inherits: true; }
+    @property --ibpu-12px { syntax: "<length>"; initial-value: 12px; inherits: true; }
+    @property --ibpu-14px { syntax: "<length>"; initial-value: 14px; inherits: true; }
+    @property --ibpu-16px { syntax: "<length>"; initial-value: 16px; inherits: true; }
+    @property --ibpu-18px { syntax: "<length>"; initial-value: 18px; inherits: true; }
+    @property --ibpu-20px { syntax: "<length>"; initial-value: 20px; inherits: true; }
+    @property --ibpu-22px { syntax: "<length>"; initial-value: 22px; inherits: true; }
+    @property --ibpu-24px { syntax: "<length>"; initial-value: 24px; inherits: true; }
+    @property --ibpu-26px { syntax: "<length>"; initial-value: 26px; inherits: true; }
+    @property --ibpu-28px { syntax: "<length>"; initial-value: 28px; inherits: true; }
+    @property --ibpu-30px { syntax: "<length>"; initial-value: 30px; inherits: true; }
+    @property --ibpu-32px { syntax: "<length>"; initial-value: 32px; inherits: true; }
+    @property --ibpu-34px { syntax: "<length>"; initial-value: 34px; inherits: true; }
+    @property --ibpu-36px { syntax: "<length>"; initial-value: 36px; inherits: true; }
+    @property --ibpu-38px { syntax: "<length>"; initial-value: 38px; inherits: true; }
+    @property --ibpu-40px { syntax: "<length>"; initial-value: 40px; inherits: true; }
+    @property --ibpu-42px { syntax: "<length>"; initial-value: 42px; inherits: true; }
+    @property --ibpu-44px { syntax: "<length>"; initial-value: 44px; inherits: true; }
+    @property --ibpu-46px { syntax: "<length>"; initial-value: 46px; inherits: true; }
+    @property --ibpu-48px { syntax: "<length>"; initial-value: 48px; inherits: true; }
+    @property --ibpu-50px { syntax: "<length>"; initial-value: 50px; inherits: true; }
+
+    @property --ibpu-56px { syntax: "<length>"; initial-value: 56px; inherits: true; }
+    @property --ibpu-64px { syntax: "<length>"; initial-value: 64px; inherits: true; }
+    @property --ibpu-72px { syntax: "<length>"; initial-value: 72px; inherits: true; }
+    @property --ibpu-80px { syntax: "<length>"; initial-value: 80px; inherits: true; }
+    @property --ibpu-96px { syntax: "<length>"; initial-value: 96px; inherits: true; }
+    @property --ibpu-128px { syntax: "<length>"; initial-value: 128px; inherits: true; }
+    @property --ibpu-160px { syntax: "<length>"; initial-value: 160px; inherits: true; }
+    :where(
+      .breakpoint-system,
+      .bp-stage,
+      .bp-node
+    ) {
+      /* bpu-1rem !== 1rem if user scaling and author opted-out. Also changes with emulation. */
+      --ibpu-1rem-n: calc(var(--ibpu-1) * var(--_bp-author-rem-basis));
+      --ibpu-1rem: calc(var(--ibpu-1rem-n) * 1px);
+
+      /* --_bp-fluid-scalar */
+      --ibpu-1: var(--_bp-ibpu-1);
+      --ibpu-3: calc(var(--ibpu-1) * 3);
+      --ibpu-5: calc(var(--ibpu-1) * 5);
+      --ibpu-15: calc(var(--ibpu-1) * 15);
+      --ibpu-25: calc(var(--ibpu-1) * 25);
+      --ibpu-35: calc(var(--ibpu-1) * 35);
+      --ibpu-45: calc(var(--ibpu-1) * 45);
+
+      --ibpu-2: calc(var(--ibpu-1) * 2);
+      --ibpu-4: calc(var(--ibpu-1) * 4);
+      --ibpu-6: calc(var(--ibpu-1) * 6);
+      --ibpu-8: calc(var(--ibpu-1) * 8);
+      --ibpu-10: calc(var(--ibpu-1) * 10);
+      --ibpu-12: calc(var(--ibpu-1) * 12);
+      --ibpu-14: calc(var(--ibpu-1) * 14);
+      --ibpu-16: calc(var(--ibpu-1) * 16);
+      --ibpu-18: calc(var(--ibpu-1) * 18);
+      --ibpu-20: calc(var(--ibpu-1) * 20);
+      --ibpu-22: calc(var(--ibpu-1) * 22);
+      --ibpu-24: calc(var(--ibpu-1) * 24);
+      --ibpu-26: calc(var(--ibpu-1) * 26);
+      --ibpu-28: calc(var(--ibpu-1) * 28);
+      --ibpu-30: calc(var(--ibpu-1) * 30);
+      --ibpu-32: calc(var(--ibpu-1) * 32);
+      --ibpu-34: calc(var(--ibpu-1) * 34);
+      --ibpu-36: calc(var(--ibpu-1) * 36);
+      --ibpu-38: calc(var(--ibpu-1) * 38);
+      --ibpu-40: calc(var(--ibpu-1) * 40);
+      --ibpu-42: calc(var(--ibpu-1) * 42);
+      --ibpu-44: calc(var(--ibpu-1) * 44);
+      --ibpu-46: calc(var(--ibpu-1) * 46);
+      --ibpu-48: calc(var(--ibpu-1) * 48);
+      --ibpu-50: calc(var(--ibpu-1) * 50);
+
+      --ibpu-56: calc(var(--ibpu-1) * 56);
+      --ibpu-64: calc(var(--ibpu-1) * 64);
+      --ibpu-72: calc(var(--ibpu-1) * 72);
+      --ibpu-80: calc(var(--ibpu-1) * 80);
+      --ibpu-96: calc(var(--ibpu-1) * 96);
+      --ibpu-128: calc(var(--ibpu-1) * 128);
+      --ibpu-160: calc(var(--ibpu-1) * 160);
+
+      --ibpu-1px: calc(var(--ibpu-1) * 1px);
+      --ibpu-3px: calc(var(--ibpu-1) * 3px);
+      --ibpu-5px: calc(var(--ibpu-1) * 5px);
+      --ibpu-15px: calc(var(--ibpu-1) * 15px);
+      --ibpu-25px: calc(var(--ibpu-1) * 25px);
+      --ibpu-35px: calc(var(--ibpu-1) * 35px);
+      --ibpu-45px: calc(var(--ibpu-1) * 45px);
+
+      --ibpu-2px: calc(var(--ibpu-1) * 2px);
+      --ibpu-4px: calc(var(--ibpu-1) * 4px);
+      --ibpu-6px: calc(var(--ibpu-1) * 6px);
+      --ibpu-8px: calc(var(--ibpu-1) * 8px);
+      --ibpu-10px: calc(var(--ibpu-1) * 10px);
+      --ibpu-12px: calc(var(--ibpu-1) * 12px);
+      --ibpu-14px: calc(var(--ibpu-1) * 14px);
+      --ibpu-16px: calc(var(--ibpu-1) * 16px);
+      --ibpu-18px: calc(var(--ibpu-1) * 18px);
+      --ibpu-20px: calc(var(--ibpu-1) * 20px);
+      --ibpu-22px: calc(var(--ibpu-1) * 22px);
+      --ibpu-24px: calc(var(--ibpu-1) * 24px);
+      --ibpu-26px: calc(var(--ibpu-1) * 26px);
+      --ibpu-28px: calc(var(--ibpu-1) * 28px);
+      --ibpu-30px: calc(var(--ibpu-1) * 30px);
+      --ibpu-32px: calc(var(--ibpu-1) * 32px);
+      --ibpu-34px: calc(var(--ibpu-1) * 34px);
+      --ibpu-36px: calc(var(--ibpu-1) * 36px);
+      --ibpu-38px: calc(var(--ibpu-1) * 38px);
+      --ibpu-40px: calc(var(--ibpu-1) * 40px);
+      --ibpu-42px: calc(var(--ibpu-1) * 42px);
+      --ibpu-44px: calc(var(--ibpu-1) * 44px);
+      --ibpu-46px: calc(var(--ibpu-1) * 46px);
+      --ibpu-48px: calc(var(--ibpu-1) * 48px);
+      --ibpu-50px: calc(var(--ibpu-1) * 50px);
+
+      --ibpu-56px: calc(var(--ibpu-1) * 56px);
+      --ibpu-64px: calc(var(--ibpu-1) * 64px);
+      --ibpu-72px: calc(var(--ibpu-1) * 72px);
+      --ibpu-80px: calc(var(--ibpu-1) * 80px);
+      --ibpu-96px: calc(var(--ibpu-1) * 96px);
+      --ibpu-128px: calc(var(--ibpu-1) * 128px);
+      --ibpu-160px: calc(var(--ibpu-1) * 160px);
+    }
+  }
+}
