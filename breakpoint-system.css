@@ -4,14 +4,20 @@
  * Copyright (c) Jane Ori, PropJockey, 2026
  */
 
-@supports ((selector(&)) and (font-weight: round(100, 0.05))) {
-  /* Specific tests made round() important. Final: Chrome 125, safari 16.5, ff 118
-  // Soft requires & nesting selector (chrome 112, safari 16.5, ff 117). Hard req:
-  // working tan(atan2()) scalars from registered <length> (~92% as of April 2026)
-  // chrome 111 (view-transition-name: none) and (background: paint(for-chromium))
-  // firefox 128 (color: rgb(from lightskyblue r g b)) and (-moz-appearance: none)
-  // fixed late in safari 16 (text-align-last: center) and (-webkit-hyphens: none)
-  // https://dev.to/janeori/css-type-casting-to-numeric-tanatan2-scalars-582j?2077
+@supports (
+  ((background: paint(for-chromium)) and (width: abs(-1px))) or
+  ((selector(&)) and (-webkit-hyphens: none)) or
+  ((color: rgb(from lightskyblue r g b)) and (-moz-appearance: none))
+) {
+  /* TECHNICALLY I can get this working for Chrome 125, Safari 16.5, & firefox 128
+  // but you can pay me for older Chrome patches if you need it. Limiting factors:
+  // abs() Chrome 138: Jun 2025 (surprising) https://caniuse.com/mdn-css_types_abs 
+  // @property Firefox 128: Jul 2024 https://caniuse.com/mdn-css_at-rules_property
+  // *working* tan(atan2()) scalars from registered <length> Safari 16.5: May 2023
+  // See: https://dev.to/janeori/css-type-casting-to-numeric-tanatan2-scalars-582j
+  // selector(&) targets Safari 16.5 https://caniuse.com/mdn-css_selectors_nesting
+  // If I add Chrome 125 support, the @supports is (font-weight: round(100, 0.05))
+  // Pre Chrome 125 is 2.8% global users, pre Chrome 138 is 3.61% - delta is 0.81%
   */
 
   @layer breakpoint-system {
@@ -463,8 +469,8 @@
         */
       }
     }
-    /* don't let firefox touch this at all - revert-layer doesn't work, bugs filed */
-    @supports (not (-moz-appearance: none)) {
+    /* don't let firefox touch this at all - revert-layer doesn't work, bugs filed. Safari 26+, 18 doesn't work. */
+    @supports (not (-moz-appearance: none)) and (animation-range: normal) {
       @layer auto-measure-mixin {
         @property --_bp-am-use-after-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
         @property --_bp-am-use-before-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
@@ -584,20 +590,13 @@
     @property --_bp-author-emulation-target { syntax: "<number>"; initial-value: 0; inherits: false; }
     @property --_bp-author-emulation-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
     @property --_bp-author-scalar { syntax: "<number>"; initial-value: 1; inherits: false; }
-    :where(
-      [class*="breakpoint-system"],
-      [class*="bp-stage"],
-      [class*="bp-node"]
-    ) {
-      --bp-query-on: var(--_bp-am-mixin-export-main, 100cqw);
-      /* todo: if this ^ is a number, use parent bpu to scale it - registered as len atm */
-      --bp-query-on-n: calc(10000 * tan(atan2(var(--bp-query-on), 10000px)));
-      /* todo: make ^ internal var instead */
-
-      /* numeric px width to render into current viewport, or a breakpoint index to use that as the target */
-      --bp-emulate: -1; /* -1 if local author emulation is off */
-
-      @supports (color: if(style(--PropJockey: breakpoint-system): #ff00c7)) {
+    /* old safaris don't like nesting this with the selector on the outside so had to move these two supports outside */
+    @supports (color: if(style(--PropJockey: breakpoint-system): #ff00c7)) {
+      :where(
+        [class*="breakpoint-system"],
+        [class*="bp-stage"],
+        [class*="bp-node"]
+      ) {
         --_bp-author-emulation-target: if(
           style(--bp-emulate: -1): -1;
           style(--bp-emulate: 0): var(--bp-0-at, 0);
@@ -613,7 +612,13 @@
           else: var(--bp-emulate);
         );
       }
-      @supports not (color: if(style(--ands: or-buts): #8100f0)) {
+    }
+    @supports not (color: if(style(--ands: or-buts): #8100f0)) {
+      :where(
+        [class*="breakpoint-system"],
+        [class*="bp-stage"],
+        [class*="bp-node"]
+      ) {
         /* resolve to breakpoint value - bp 0 resolves to its basis */
         /* last condition is > 9, the rest are === -X
         // --_bp-author-emulation-target is either the render target or -1
@@ -657,6 +662,19 @@
           ) * 1000, 1)) * var(--bp-emulate)
         );
       }
+    }
+    :where(
+      [class*="breakpoint-system"],
+      [class*="bp-stage"],
+      [class*="bp-node"]
+    ) {
+      --bp-query-on: var(--_bp-am-mixin-export-main, 100cqw);
+      /* todo: if this ^ is a number, use parent bpu to scale it - registered as len atm */
+      --bp-query-on-n: calc(10000 * tan(atan2(var(--bp-query-on), 10000px)));
+      /* todo: make ^ internal var instead */
+
+      /* numeric px width to render into current viewport, or a breakpoint index to use that as the target */
+      --bp-emulate: -1; /* -1 if local author emulation is off */
 
       /* is there local emulation? */
       --_bp-author-emulation-flag: calc(clamp(0, (var(--_bp-author-emulation-target) + 1) * 1000, 1));
@@ -1052,7 +1070,7 @@
     /* Three implementations:
     // 1: if(style()) 66% - no paused animation, best
     // 2: chrome before if(style()) 8.5% + safari ~15% - animation + revert layer hack to avoid tainting
-    // 3: firefox basic paused animation casting ~2%
+    // 3: firefox basic paused animation casting ~1.75%
     // - tainting doesn't seem to matter for ff nor safari but revert-layer doesn't work in ff with vars
     // And two shared pools:
     // 1: qin-st and qin-ist are enough to derive gte and lt so no matter which implementation, they converge for those
@@ -1360,8 +1378,10 @@
       }
     }
 
-    /* Safari and pre-if(style()) chrome, use animation casting but scrape off tainting with a revert-layer spec hack */
-    @supports (not (color: if(style(--ands: or-buts): #8100f0))) and (not (-moz-appearance: none)) {
+    /* pre-if(style()): chrome and safari 26+ use animation casting but scrape off tainting with a revert-layer spec hack */
+    @supports (not (color: if(style(--ands: or-buts): #8100f0))) and (
+      (background: paint(for-chromium)) or ((-webkit-hyphens: none) and (animation-range: normal))
+    ) {
       @keyframes --_bp-qin-0-cast-to-st { 50%, 100% { --_bp-qin-0-st: ; --_bp-qin-0-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 0 */
       @keyframes --_bp-qin-1-cast-to-st { 50%, 100% { --_bp-qin-1-st: ; --_bp-qin-1-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 1 */
       @keyframes --_bp-qin-2-cast-to-st { 50%, 100% { --_bp-qin-2-st: ; --_bp-qin-2-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 2 */
@@ -1471,8 +1491,14 @@
         }
       }
     }
-    /* firefox implementation - can't scrape taint but thankfully space toggle taint doesn't seem to prevent anything in ff */
-    @supports (not (color: if(style(--ands: or-buts): #8100f0))) and (-moz-appearance: none) {
+    /* firefox implementation and < Safari 26 - can't scrape taint but thankfully space toggle taint doesn't seem to prevent anything */
+    @supports (
+      not (color: if(style(--ands: or-buts): #8100f0))
+    ) and (
+      (-moz-appearance: none) or (
+        (-webkit-hyphens: none) and (not (animation-range: normal))
+      )
+    ) {
       @keyframes --_bp-qin-0-taint-to-st { 50%, 100% { --bp-qin-0-st: ; --bp-qin-0-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 0 */
       @keyframes --_bp-qin-1-taint-to-st { 50%, 100% { --bp-qin-1-st: ; --bp-qin-1-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 1 */
       @keyframes --_bp-qin-2-taint-to-st { 50%, 100% { --bp-qin-2-st: ; --bp-qin-2-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 2 */

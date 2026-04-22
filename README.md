@@ -1,7 +1,7 @@
 [![Jane Ori - PropJockey.io](https://img.shields.io/badge/Jane%20Ori%20%F0%9F%91%BD-%F0%9F%A4%8D%20PropJockey.io-7300E6.svg?labelColor=FB04C2&style=plastic)](http://jane.propjockey.io/)
 
 # breakpoint-system from <img src="https://github.com/user-attachments/assets/87119fb5-c39d-429a-9bfd-424f0e100720" alt="" width="30px"> PropJockey
-Highly accessible, responsive CSS designed in pixels and implemented 1:1 with the new Breakpoint Unit for a flawless fluid experience. Custom aliases, breakpoints, and queries with heavily researched defaults. No scripts, no builds, 100% vanilla CSS. Old tech, new ideas - 91% global user reach. Deliver your designs.
+Highly accessible, responsive CSS designed in pixels and implemented 1:1 with the new Breakpoint Unit for a flawless fluid experience. Custom aliases, breakpoints, and queries with heavily researched defaults. No scripts, no builds, 100% vanilla CSS. Old tech, new ideas - 89% global user reach. Deliver your designs.
 
 Docs+Demos at: https://propjockey.breakpoint-system.com
 
@@ -17,22 +17,21 @@ OR
 
 Use your favorite NPM CDN and include it on your page for small projects. Like so:
 ```html
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/@propjockey/breakpoint-system@1.1.0/breakpoint-system.css">
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/@propjockey/breakpoint-system@1.1.1/breakpoint-system.css">
 ```
 
-## 🛸🌏💚 Browser Support (~91% global reach as of April, 2026)
+## 🛸🌏💚 Browser Support (~89% global reach as of April, 2026)
 
 The limiting factor for compatibility is the [CSS round() function](https://caniuse.com/mdn-css_types_round) and [CSS nesting selector](https://caniuse.com/mdn-css_selectors_nesting).
 
 | Browser / Platform | Minimum Version | Date Supported | Global Share |
 | :--- | :--- | :--- | :--- |
-| **Chrome / Chrome for Android** | 125 | May 2024 | ~64% |
-| **Safari / iOS Safari** | 16.5 | May 2023 | ~16% |
-| **Firefox** | 118 | Sept 2023 | ~2.5% |
-| **Edge** | 125 | May 2024 | ~5.5% |
-| **Samsung Internet** | 22 | Sept 2024 | ~2% |
-| **Opera** | 111 | June 2024 | ~0.5% |
-| **Total Unflagged Support** | | | **~91%** |
+| **Safari / iOS Safari** | 16.5 | May 2023 | ~17.5% |
+| **Firefox** | 128 | July 2024 | ~1.75% |
+| **Chrome / Chrome for Android** | 138 | Jun 2025 | ~63.5% |
+| **Edge** | 138 | Jun 2025 | ~5.5% |
+| **Opera** | 122 | Sep 2025 | ~0.5% |
+| **Total Unflagged Support** | | | **~89%** |
 
 ---
 
@@ -72,7 +71,7 @@ Deliver your designs. Perfect app-ready design and text scaling using our breakp
 
 ### 🛡️ Bulletproof and Future-Ready
 
-Our API uses simple calc() switches, CSS Container Style Queries, or `if(style())` conditionals - your choice!
+Our API uses simple calc() switches, space toggles, CSS Container Style Queries, or `if(style())` conditionals - your choice!
 
 `@propjockey/breakpoint-system` is built with the future in heart, (like [some of our](https://augmented-ui.com/) [other products](https://propjockey.github.io/css-bin-bits/) [and ideas](https://dev.to/janeori/100-css-fetch-and-exfiltrate-512-bits-of-server-generated-data-embedded-in-an-animated-svg-5aad))!
 
@@ -83,7 +82,13 @@ Deliver your designs.
 
 ## CHANGELOG:
 
-v1.1.0 - April 21st, 2026:
+v1.1.1 - April 23rd, 2026:
+* Added over 2700 query tests to the website (stress test too) https://propjockey.breakpoint-system.com/tests.html
+* Fixed browser support for FF 128 and Safari 16.5 - 18.7 thanks to a generous month of BrowserStack from [@terzic](https://github.com/terzic)
+* Corrected Chrome support, CSS abs() is its limiting factor (- 0.81% reach from initial mistake)
+* Updated the library's root @supports statements to perfectly align with actual support
+
+v1.1.0 - April 22nd, 2026:
 * Made class names prefix--extensible by authors.
 * Added query "in" space toggle opt-in expansion.
 * Fixes for a currently-undocumented feature set.
