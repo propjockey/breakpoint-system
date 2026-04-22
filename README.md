@@ -1,7 +1,7 @@
 [![Jane Ori - PropJockey.io](https://img.shields.io/badge/Jane%20Ori%20%F0%9F%91%BD-%F0%9F%A4%8D%20PropJockey.io-7300E6.svg?labelColor=FB04C2&style=plastic)](http://jane.propjockey.io/)
 
 # breakpoint-system from <img src="https://github.com/user-attachments/assets/87119fb5-c39d-429a-9bfd-424f0e100720" alt="" width="30px"> PropJockey
-A brand new way to write highly accessible, responsive CSS. Fluid design and typography units built in, custom-size breakpoints and custom-aliased queries, no scripts, no builds, 100% vanilla CSS. Deliver your designs.
+Highly accessible, responsive CSS designed in pixels and implemented 1:1 with the new Breakpoint Unit for a flawless fluid experience. Custom aliases, breakpoints, and queries with heavily researched defaults. No scripts, no builds, 100% vanilla CSS. Old tech, new ideas - 91% global user reach. Deliver your designs.
 
 Docs+Demos at: https://propjockey.breakpoint-system.com
 
@@ -17,7 +17,7 @@ OR
 
 Use your favorite NPM CDN and include it on your page for small projects. Like so:
 ```html
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/@propjockey/breakpoint-system@1.0.0/breakpoint-system.css">
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/@propjockey/breakpoint-system@1.1.0/breakpoint-system.css">
 ```
 
 ## 🛸🌏💚 Browser Support (~91% global reach as of April, 2026)
@@ -82,6 +82,11 @@ Deliver your designs.
 
 
 ## CHANGELOG:
+
+v1.1.0 - April 21st, 2026:
+* Made class names prefix--extensible by authors.
+* Added query "in" space toggle opt-in expansion.
+* Fixes for a currently-undocumented feature set.
 
 v1.0.0 - April 17th, 2026:
 * Initial release

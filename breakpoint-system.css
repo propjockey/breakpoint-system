@@ -54,7 +54,7 @@
     @property --bp-8-at { syntax: "<number>"; initial-value: 0; inherits: true; }
     @property --bp-9-at { syntax: "<number>"; initial-value: 0; inherits: true; }
     /* default, optional, configs. Full screen width based set first: */
-    :where(.bp-stage) {
+    :where([class*="bp-stage"]) {
       /* not a real bp, value is what effective-screensize is 16--bpu = 16 pixels? */
       --bp-0-at: 375; /* just over 10% of mobile phones are 360 width, < 2% are smaller than that */
       --qgte-xxs: var(--bp-qgte-0);
@@ -102,6 +102,9 @@
       --bp-8-at: 0;
       --bp-9-at: 0;
 
+      --bp-fluidity: var(--bp-fluid-0) var(--bp-fluid-1) var(--bp-fluid-2) var(--bp-fluid-3)
+        var(--bp-fluid-4) var(--bp-fluid-5) var(--bp-fluid-6);
+
       /* Typography Scalars
       // xxs, xs: Minor Third @ 1.2
       // sm, md: Major Third @ 1.25
@@ -122,8 +125,59 @@
       );
     }
 
+    /* default aliases for opt-in stage query space toggles */
+    :where([class*="bp-stage-st"]) {
+      --qin-xxs-st: var(--bp-qin-0-st);
+      --qin-xs-st: var(--bp-qin-1-st);
+      --qin-sm-st: var(--bp-qin-2-st);
+      --qin-md-st: var(--bp-qin-3-st);
+      --qin-lg-st: var(--bp-qin-4-st);
+      --qin-xl-st: var(--bp-qin-5-st);
+      --qin-xxl-st: var(--bp-qin-6-st);
+
+      --qin-xxs-ist: var(--bp-qin-0-ist);
+      --qin-xs-ist: var(--bp-qin-1-ist);
+      --qin-sm-ist: var(--bp-qin-2-ist);
+      --qin-md-ist: var(--bp-qin-3-ist);
+      --qin-lg-ist: var(--bp-qin-4-ist);
+      --qin-xl-ist: var(--bp-qin-5-ist);
+      --qin-xxl-ist: var(--bp-qin-6-ist);
+
+      --qgte-xxs-st: var(--bp-qgte-0-st);
+      --qgte-xs-st: var(--bp-qgte-1-st);
+      --qgte-sm-st: var(--bp-qgte-2-st);
+      --qgte-md-st: var(--bp-qgte-3-st);
+      --qgte-lg-st: var(--bp-qgte-4-st);
+      --qgte-xl-st: var(--bp-qgte-5-st);
+      --qgte-xxl-st: var(--bp-qgte-6-st);
+
+      --qgte-xxs-ist: var(--bp-qgte-0-ist);
+      --qgte-xs-ist: var(--bp-qgte-1-ist);
+      --qgte-sm-ist: var(--bp-qgte-2-ist);
+      --qgte-md-ist: var(--bp-qgte-3-ist);
+      --qgte-lg-ist: var(--bp-qgte-4-ist);
+      --qgte-xl-ist: var(--bp-qgte-5-ist);
+      --qgte-xxl-ist: var(--bp-qgte-6-ist);
+
+      --qlt-xxs-st: var(--bp-qlt-0-st);
+      --qlt-xs-st: var(--bp-qlt-1-st);
+      --qlt-sm-st: var(--bp-qlt-2-st);
+      --qlt-md-st: var(--bp-qlt-3-st);
+      --qlt-lg-st: var(--bp-qlt-4-st);
+      --qlt-xl-st: var(--bp-qlt-5-st);
+      --qlt-xxl-st: var(--bp-qlt-6-st);
+
+      --qlt-xxs-ist: var(--bp-qlt-0-ist);
+      --qlt-xs-ist: var(--bp-qlt-1-ist);
+      --qlt-sm-ist: var(--bp-qlt-2-ist);
+      --qlt-md-ist: var(--bp-qlt-3-ist);
+      --qlt-lg-ist: var(--bp-qlt-4-ist);
+      --qlt-xl-ist: var(--bp-qlt-5-ist);
+      --qlt-xxl-ist: var(--bp-qlt-6-ist);
+    }
+
     /* different set of width based defaults for individual components: */
-    :where(.bp-node) {
+    :where([class*="bp-node"]) {
       /* not a real bp, value is what effective-screensize is 16--bpu = 16 pixels? */
       --bp-0-at: 120;
       --qgte-coin: var(--bp-qgte-0);
@@ -185,12 +239,83 @@
       --qin-lg-page: var(--bp-qin-9);
       --fluid-lg-page: var(--bp-fluid-9);
 
+      --bp-fluidity: var(--bp-fluid-all);
+
       /* if you are designing components larger than these, use stage breakpoints instead */
       --bpu-typography-scalar: calc(
         1.2 +
         var(--qin-lg-card) * 0.05 +
         var(--qin-lg-page) * 0.05
       );
+    }
+
+    /* default aliases for opt-in node qin space toggles */
+    :where([class*="bp-node-st"]) {
+      --qin-coin-st: var(--bp-qin-0-st);
+      --qin-sm-note-st: var(--bp-qin-1-st);
+      --qin-sm-card-st: var(--bp-qin-2-st);
+      --qin-sm-page-st: var(--bp-qin-3-st);
+      --qin-md-note-st: var(--bp-qin-4-st);
+      --qin-md-card-st: var(--bp-qin-5-st);
+      --qin-md-page-st: var(--bp-qin-6-st);
+      --qin-lg-note-st: var(--bp-qin-7-st);
+      --qin-lg-card-st: var(--bp-qin-8-st);
+      --qin-lg-page-st: var(--bp-qin-9-st);
+
+      --qin-coin-ist: var(--bp-qin-0-ist);
+      --qin-sm-note-ist: var(--bp-qin-1-ist);
+      --qin-sm-card-ist: var(--bp-qin-2-ist);
+      --qin-sm-page-ist: var(--bp-qin-3-ist);
+      --qin-md-note-ist: var(--bp-qin-4-ist);
+      --qin-md-card-ist: var(--bp-qin-5-ist);
+      --qin-md-page-ist: var(--bp-qin-6-ist);
+      --qin-lg-note-ist: var(--bp-qin-7-ist);
+      --qin-lg-card-ist: var(--bp-qin-8-ist);
+      --qin-lg-page-ist: var(--bp-qin-9-ist);
+
+      --qgte-coin-st: var(--bp-qgte-0-st);
+      --qgte-sm-note-st: var(--bp-qgte-1-st);
+      --qgte-sm-card-st: var(--bp-qgte-2-st);
+      --qgte-sm-page-st: var(--bp-qgte-3-st);
+      --qgte-md-note-st: var(--bp-qgte-4-st);
+      --qgte-md-card-st: var(--bp-qgte-5-st);
+      --qgte-md-page-st: var(--bp-qgte-6-st);
+      --qgte-lg-note-st: var(--bp-qgte-7-st);
+      --qgte-lg-card-st: var(--bp-qgte-8-st);
+      --qgte-lg-page-st: var(--bp-qgte-9-st);
+
+      --qgte-coin-ist: var(--bp-qgte-0-ist);
+      --qgte-sm-note-ist: var(--bp-qgte-1-ist);
+      --qgte-sm-card-ist: var(--bp-qgte-2-ist);
+      --qgte-sm-page-ist: var(--bp-qgte-3-ist);
+      --qgte-md-note-ist: var(--bp-qgte-4-ist);
+      --qgte-md-card-ist: var(--bp-qgte-5-ist);
+      --qgte-md-page-ist: var(--bp-qgte-6-ist);
+      --qgte-lg-note-ist: var(--bp-qgte-7-ist);
+      --qgte-lg-card-ist: var(--bp-qgte-8-ist);
+      --qgte-lg-page-ist: var(--bp-qgte-9-ist);
+
+      --qlt-coin-st: var(--bp-qlt-0-st);
+      --qlt-sm-note-st: var(--bp-qlt-1-st);
+      --qlt-sm-card-st: var(--bp-qlt-2-st);
+      --qlt-sm-page-st: var(--bp-qlt-3-st);
+      --qlt-md-note-st: var(--bp-qlt-4-st);
+      --qlt-md-card-st: var(--bp-qlt-5-st);
+      --qlt-md-page-st: var(--bp-qlt-6-st);
+      --qlt-lg-note-st: var(--bp-qlt-7-st);
+      --qlt-lg-card-st: var(--bp-qlt-8-st);
+      --qlt-lg-page-st: var(--bp-qlt-9-st);
+
+      --qlt-coin-ist: var(--bp-qlt-0-ist);
+      --qlt-sm-note-ist: var(--bp-qlt-1-ist);
+      --qlt-sm-card-ist: var(--bp-qlt-2-ist);
+      --qlt-sm-page-ist: var(--bp-qlt-3-ist);
+      --qlt-md-note-ist: var(--bp-qlt-4-ist);
+      --qlt-md-card-ist: var(--bp-qlt-5-ist);
+      --qlt-md-page-ist: var(--bp-qlt-6-ist);
+      --qlt-lg-note-ist: var(--bp-qlt-7-ist);
+      --qlt-lg-card-ist: var(--bp-qlt-8-ist);
+      --qlt-lg-page-ist: var(--bp-qlt-9-ist);
     }
 
     /* initialize fluidity */
@@ -227,9 +352,9 @@
     @property --bp-8-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
     @property --bp-9-defined { syntax: "<integer>"; initial-value: 0; inherits: false; }
     :where(
-      .breakpoint-system,
-      .bp-stage,
-      .bp-node
+      [class*="breakpoint-system"],
+      [class*="bp-stage"],
+      [class*="bp-node"]
     ) {
       -webkit-text-size-adjust: 100%;
       text-size-adjust: 100%;
@@ -311,143 +436,164 @@
       --bp-9-defined: calc(min(1, var(--bp-9-at)) * var(--_bp-fluid-9-flag));
     }
 
-    /* resolve query-on (ties into auto-measure-mixin) */
+    @layer auto-measure-mixin-init {
+      :where(
+        [class*="breakpoint-system"],
+        [class*="bp-stage"],
+        [class*="bp-node"]
+      ) {
+        /* using auto measure puts you in view-timeline compat table */
+        /* so it is safe for us to use @component style queries in this spceific case */
+
+        /* if only height is chosen, everything comes alive except the measuring device */
+        --bp-auto-measure: var(--bp-am-off);
+        /* API options are cyclic-intial if chosen, else space */
+        --bp-am-off: var(--bp-auto-measure, );
+        --bp-am-before: var(--bp-auto-measure, );
+        --bp-am-after: var(--bp-auto-measure, );
+        --bp-am-delegate: var(--bp-auto-measure, );
+        --bp-am-height: var(--bp-auto-measure, );
+
+        --_bp-am-mixin-export-main: initial; /* pixels for ease of user overrides */
+        --_bp-am-mixin-export-cross: initial; /* pixels for ease of user overrides */
+        /* auto measue tells breakpoint-system what size to query against (sets --bp-query-on) by
+        // measuring the size of the element itself. aspect-ratio gives you information that lets
+        // you fit an element INSIDE of this area and caps your bpu values (until the area is big
+        // enough to let the aspect-ratio confined axis grow again). So if am, then nest a-r els. 
+        */
+      }
+    }
+    /* don't let firefox touch this at all - revert-layer doesn't work, bugs filed */
+    @supports (not (-moz-appearance: none)) {
+      @layer auto-measure-mixin {
+        @property --_bp-am-use-after-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+        @property --_bp-am-use-before-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+        @property --_bp-am-use-delegate-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
+        @property --_bp-am-n-of-10k-eq-1px-of-length { syntax: "<number>"; initial-value: 0; inherits: false; }
+        @property --_bp-am-n-of-10k-eq-1px-of-cross { syntax: "<number>"; initial-value: 0; inherits: false; }
+        @keyframes --_bp-am-mixin-animation-main {
+          from { --_bp-am-n-of-10k-eq-1px-of-length: 0; }
+          to { --_bp-am-n-of-10k-eq-1px-of-length: 10000; }
+        }
+        @keyframes --_bp-am-mixin-animation-cross {
+          from { --_bp-am-n-of-10k-eq-1px-of-cross: 0; }
+          to { --_bp-am-n-of-10k-eq-1px-of-cross: 10000; }
+        }
+        :where(
+          [class*="breakpoint-system"],
+          [class*="bp-stage"],
+          [class*="bp-node"]
+        ) {
+          --_bp-am-after-0-if-off: var(--bp-am-after) 0;
+          --_bp-am-use-after-flag: var(--_bp-am-after-0-if-off, 1);
+
+          --_bp-am-before-0-if-off: var(--bp-am-before) 0;
+          --_bp-am-use-before-flag: var(--_bp-am-before-0-if-off, 1);
+
+          --_bp-am-delegate-0-if-off: var(--bp-am-delegate) 0;
+          --_bp-am-use-delegate-flag: var(--_bp-am-delegate-0-if-off, 1);
+
+          --_bp-am-inline-if-not-height: inline var(--bp-am-height);
+          --_bp-am-use-axis: var(--_bp-am-inline-if-not-height, block);
+          --_bp-am-block-if-not-height: block var(--bp-am-height);
+          --_bp-am-use-cross: var(--_bp-am-block-if-not-height, inline);
+
+          /* all spaces = off */
+          --_bp-am-space-if-off:
+            var(--bp-am-before)
+            var(--bp-am-after)
+            var(--bp-am-delegate);
+
+          overflow: var(--bp-am-off, revert-layer)
+            var(--_bp-am-space-if-off, auto);
+          position: var(--bp-am-off, revert-layer)
+            var(--_bp-am-space-if-off, relative);
+          /* Cross Multiply to solve for length
+          //  1px    animation sets: what amount of 0 to 10000 does 1px of 0px to len take?
+          // ----- = -----
+          //  len    10000
+          //
+          //  10000 * 1px / animation-timeline-value = len
+          */
+          --_bp-am-mixin-export-main: var(--bp-am-off, revert-layer)
+            var(--_bp-am-space-if-off, calc(10000 / var(--_bp-am-n-of-10k-eq-1px-of-length) * 1px));
+          --_bp-am-mixin-export-cross: var(--bp-am-off, revert-layer)
+            var(--_bp-am-space-if-off, calc(10000 / var(--_bp-am-n-of-10k-eq-1px-of-cross) * 1px));
+          timeline-scope: var(--bp-am-off, revert-layer)
+            var(--_bp-am-space-if-off, --_bp-am-mixin-timeline-main, --_bp-am-mixin-timeline-cross);
+          animation: var(--bp-am-off, revert-layer)
+            var(--_bp-am-space-if-off, --_bp-am-mixin-animation-main 1ms linear, --_bp-am-mixin-animation-cross 1ms linear);
+          animation-timeline: var(--bp-am-off, revert-layer)
+            var(--_bp-am-space-if-off, --_bp-am-mixin-timeline-main, --_bp-am-mixin-timeline-cross);
+          animation-range: var(--bp-am-off, revert-layer)
+            var(--_bp-am-space-if-off, entry 100% exit 100%, entry 100% exit 100%);
+
+          /* we do what we must because we can. */
+          --_bp-am-timeline-scope: var(--_bp-am-space-if-off, --_bp-am-mixin-timeline-main, --_bp-am-mixin-timeline-cross, );
+          --_bp-am-animation: var(--_bp-am-space-if-off, --_bp-am-mixin-animation-main 1ms linear, --_bp-am-mixin-animation-cross 1ms linear, );
+          --_bp-am-animation-name: var(--_bp-am-space-if-off, --_bp-am-mixin-animation-main, --_bp-am-mixin-animation-cross, );
+          --_bp-am-animation-duration: var(--_bp-am-space-if-off, 1ms, 1ms, );
+          --_bp-am-animation-timing-function: var(--_bp-am-space-if-off, linear, linear, );
+          --_bp-am-animation-delay: var(--_bp-am-space-if-off, 0s, 0s, );
+          --_bp-am-animation-iteration-count: var(--_bp-am-space-if-off, 1, 1, );
+          --_bp-am-animation-direction: var(--_bp-am-space-if-off, normal, normal, );
+          --_bp-am-animation-fill-mode: var(--_bp-am-space-if-off, none, none, );
+          --_bp-am-animation-play-state: var(--_bp-am-space-if-off, running, running, );
+          --_bp-am-animation-composition: var(--_bp-am-space-if-off, replace, replace, );
+          --_bp-am-animation-timeline: var(--_bp-am-space-if-off, --_bp-am-mixin-timeline-main, --_bp-am-mixin-timeline-cross, );
+          --_bp-am-animation-range: var(--_bp-am-space-if-off, entry 100% exit 100%, entry 100% exit 100%, );
+          --_bp-am-animation-range-start: var(--_bp-am-space-if-off, entry 100%, entry 100%, );
+          --_bp-am-animation-range-end: var(--_bp-am-space-if-off, exit 100%, exit 100%, );
+
+          /* Safari's @container style() is so unreliable/race-condition-y, I can't really ship this feature yet. */
+          @container style(--_bp-am-use-after-flag: 1) {
+            &::after { pointer-events: none;
+              content: ""; position: absolute;
+              right: 1px; bottom: 1px; width: 1px; height: 1px;
+              margin: 0px; padding: 0px; font-size: 0px; line-height: 0px;
+              view-timeline: --_bp-am-mixin-timeline-main var(--_bp-am-use-axis),
+                --_bp-am-mixin-timeline-cross var(--_bp-am-use-cross);
+            }
+          }
+          @container style(--_bp-am-use-before-flag: 1) {
+            &::before { pointer-events: none;
+              content: ""; position: absolute;
+              right: 1px; bottom: 1px; width: 1px; height: 1px;
+              margin: 0px; padding: 0px; font-size: 0px; line-height: 0px;
+              view-timeline: --_bp-am-mixin-timeline-main var(--_bp-am-use-axis),
+                --_bp-am-mixin-timeline-cross var(--_bp-am-use-cross);
+            }
+          }
+          @container style(--_bp-am-use-delegate-flag: 1) {
+            & > .bp-measurement-delegate { pointer-events: none;
+              position: absolute; border: none; outline: none;
+              right: 1px; bottom: 1px; width: 1px; height: 1px;
+              margin: 0px; padding: 0px; font-size: 0px; line-height: 0px;
+              view-timeline: --_bp-am-mixin-timeline-main var(--_bp-am-use-axis),
+                --_bp-am-mixin-timeline-cross var(--_bp-am-use-cross);
+            }
+          }
+        }
+      }
+    }
+
+    /* resolve query-on and local author emulation */
     @property --bp-query-on { syntax: "<length>"; initial-value: 0px; inherits: false; }
     @property --bp-query-on-n { syntax: "<number>"; initial-value: 0; inherits: false; }
-    :where(
-      .breakpoint-system,
-      .bp-stage,
-      .bp-node
-    ) {
-      /* using auto measure puts you in view-timeline compat table */
-      /* so it is safe for us to use @component style queries in this spceific case */
-
-      /* if only height is chosen, everything comes alive except the measuring device */
-      --bp-auto-measure: var(--bp-am-off);
-      /* API options are cyclic-intial if chosen, else space */
-      --bp-am-off: var(--bp-auto-measure, );
-      --bp-am-before: var(--bp-auto-measure, );
-      --bp-am-after: var(--bp-auto-measure, );
-      --bp-am-delegate: var(--bp-auto-measure, );
-      --bp-am-height: var(--bp-auto-measure, );
-
-      --_bp-am-mixin-export-main: initial; /* pixels for ease of user overrides */
-      --_bp-am-mixin-export-cross: initial; /* pixels for ease of user overrides */
-      /* auto measue tells breakpoint-system what size to query against (sets --bp-query-on) by
-      // measuring the size of the element itself. aspect-ratio gives you information that lets
-      // you fit an element INSIDE of this area and caps your bpu values (until the area is big
-      // enough to let the aspect-ratio confined axis grow again). So if am, then nest a-r els. 
-      */
-
-      --bp-query-on: var(--_bp-am-mixin-export-main, 100cqw);
-      /* todo: if this ^ is a number, use parent bpu to scale it - registered as len atm */
-      --bp-query-on-n: calc(10000 * tan(atan2(var(--bp-query-on), 10000px)));
-      /* todo: make ^ internal var instead */
-    }
-    @layer auto-measure-mixin {
-      @property --_bp-am-use-after-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
-      @property --_bp-am-use-before-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
-      @property --_bp-am-use-delegate-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
-      @property --_bp-am-n-of-10k-eq-1px-of-length { syntax: "<number>"; initial-value: 0; inherits: false; }
-      @property --_bp-am-n-of-10k-eq-1px-of-cross { syntax: "<number>"; initial-value: 0; inherits: false; }
-      @keyframes --_bp-am-mixin-animation-main {
-        from { --_bp-am-n-of-10k-eq-1px-of-length: 0; }
-        to { --_bp-am-n-of-10k-eq-1px-of-length: 10000; }
-      }
-      @keyframes --_bp-am-mixin-animation-cross {
-        from { --_bp-am-n-of-10k-eq-1px-of-cross: 0; }
-        to { --_bp-am-n-of-10k-eq-1px-of-cross: 10000; }
-      }
-      :where(
-        .breakpoint-system,
-        .bp-stage,
-        .bp-node
-      ) {
-        --_bp-am-after-0-if-off: var(--bp-am-after) 0;
-        --_bp-am-use-after-flag: var(--_bp-am-after-0-if-off, 1);
-
-        --_bp-am-before-0-if-off: var(--bp-am-before) 0;
-        --_bp-am-use-before-flag: var(--_bp-am-before-0-if-off, 1);
-
-        --_bp-am-delegate-0-if-off: var(--bp-am-delegate) 0;
-        --_bp-am-use-delegate-flag: var(--_bp-am-delegate-0-if-off, 1);
-
-        --_bp-am-inline-if-not-height: inline var(--bp-am-height);
-        --_bp-am-use-axis: var(--_bp-am-inline-if-not-height, block);
-        --_bp-am-block-if-not-height: block var(--bp-am-height);
-        --_bp-am-use-cross: var(--_bp-am-inline-if-not-height, inline);
-
-        /* all spaces = off */
-        --_bp-am-space-if-off:
-          var(--bp-am-before)
-          var(--bp-am-after)
-          var(--bp-am-delegate);
-
-        overflow: var(--bp-am-off, revert-layer)
-          var(--_bp-am-space-if-off, auto);
-        position: var(--bp-am-off, revert-layer)
-          var(--_bp-am-space-if-off, relative);
-        /* Cross Multiply to solve for length
-        //  1px    animation sets: what amount of 0 to 10000 does 1px of 0px to len take?
-        // ----- = -----
-        //  len    10000
-        //
-        //  10000 * 1px / animation-timeline-value = len
-        */
-        --_bp-am-mixin-export-main: var(--bp-am-off, revert-layer)
-          var(--_bp-am-space-if-off, calc(10000 / var(--_bp-am-n-of-10k-eq-1px-of-length)) * 1px);
-        --_bp-am-mixin-export-cross: var(--bp-am-off, revert-layer)
-          var(--_bp-am-space-if-off, calc(10000 / var(--_bp-am-n-of-10k-eq-1px-of-cross)) * 1px);
-        timeline-scope: var(--bp-am-off, revert-layer)
-          var(--_bp-am-space-if-off, --_bp-am-mixin-timeline-main, --_bp-am-mixin-timeline-cross);
-        animation: var(--bp-am-off, revert-layer)
-          var(--_bp-am-space-if-off, --_bp-am-mixin-animation-main 1ms linear, --_bp-am-mixin-animation-cross 1ms linear);
-        animation-timeline: var(--bp-am-off, revert-layer)
-          var(--_bp-am-space-if-off, --_bp-am-mixin-timeline-main, --_bp-am-mixin-timeline-cross);
-        animation-range: var(--bp-am-off, revert-layer)
-          var(--_bp-am-space-if-off, entry 100% exit 100%);
-
-        /* Safari's @container style() is so unreliable/race-condition-y, I can't really ship this yet. */
-        @container style(--_bp-am-use-after-flag: 1) {
-          &::after { pointer-events: none;
-            content: ""; position: absolute;
-            right: 1px; bottom: 1px; width: 1px; height: 1px;
-            margin: 0px; padding: 0px; font-size: 0px; line-height: 0px;
-            view-timeline: --_bp-am-mixin-timeline-main var(--_bp-am-use-axis),
-              --_bp-am-mixin-timeline-cross var(--_bp-am-use-cross);
-          }
-        }
-        @container style(--_bp-am-use-before-flag: 1) {
-          &::before { pointer-events: none;
-            content: ""; position: absolute;
-            right: 1px; bottom: 1px; width: 1px; height: 1px;
-            margin: 0px; padding: 0px; font-size: 0px; line-height: 0px;
-            view-timeline: --_bp-am-mixin-timeline-main var(--_bp-am-use-axis),
-              --_bp-am-mixin-timeline-cross var(--_bp-am-use-cross);
-          }
-        }
-        @container style(--_bp-am-use-delegate-flag: 1) {
-          & > .bp-measurement-delegate { pointer-events: none;
-            position: absolute; border: none; outline: none;
-            right: 1px; bottom: 1px; width: 1px; height: 1px;
-            margin: 0px; padding: 0px; font-size: 0px; line-height: 0px;
-            view-timeline: --_bp-am-mixin-timeline-main var(--_bp-am-use-axis),
-              --_bp-am-mixin-timeline-cross var(--_bp-am-use-cross);
-          }
-        }
-      }
-    }
-
-    /* resolve local author emulation */
     @property --bp-emulate { syntax: "<number>"; initial-value: -1; inherits: false; }
     @property --_bp-author-emulation-target { syntax: "<number>"; initial-value: 0; inherits: false; }
     @property --_bp-author-emulation-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
     @property --_bp-author-scalar { syntax: "<number>"; initial-value: 1; inherits: false; }
     :where(
-      .breakpoint-system,
-      .bp-stage,
-      .bp-node
+      [class*="breakpoint-system"],
+      [class*="bp-stage"],
+      [class*="bp-node"]
     ) {
+      --bp-query-on: var(--_bp-am-mixin-export-main, 100cqw);
+      /* todo: if this ^ is a number, use parent bpu to scale it - registered as len atm */
+      --bp-query-on-n: calc(10000 * tan(atan2(var(--bp-query-on), 10000px)));
+      /* todo: make ^ internal var instead */
+
       /* numeric px width to render into current viewport, or a breakpoint index to use that as the target */
       --bp-emulate: -1; /* -1 if local author emulation is off */
 
@@ -534,9 +680,9 @@
     @property --_bp-global-scalar { syntax: "<number>"; initial-value: 1; inherits: false; }
     @property --_bp-current-query-scalar { syntax: "<number>"; initial-value: 1; inherits: false; }
     :where(
-      .breakpoint-system,
-      .bp-stage,
-      .bp-node
+      [class*="breakpoint-system"],
+      [class*="bp-stage"],
+      [class*="bp-node"]
     ) {
       /* local and inherited equal 1 */
       --_bp-author-not-emulating: calc(
@@ -638,9 +784,9 @@
     @property --bp-qin-8 { syntax: "<integer>"; initial-value: -1; inherits: false; }
     @property --bp-qin-9 { syntax: "<integer>"; initial-value: -1; inherits: false; }
     :where(
-      .breakpoint-system,
-      .bp-stage,
-      .bp-node
+      [class*="breakpoint-system"],
+      [class*="bp-stage"],
+      [class*="bp-node"]
     ) {
       --_bp-q-lowest-defined: calc(min(
         var(--bp-0-defined) * var(--bp-0-at) + (1 - var(--bp-0-defined)) * 99999,
@@ -902,6 +1048,492 @@
       );
     }
 
+    /* Add space toggles for the "in" queries and export author override plug-back-in animation vars. */
+    /* Three implementations:
+    // 1: if(style()) 66% - no paused animation, best
+    // 2: chrome before if(style()) 8.5% + safari ~15% - animation + revert layer hack to avoid tainting
+    // 3: firefox basic paused animation casting ~2%
+    // - tainting doesn't seem to matter for ff nor safari but revert-layer doesn't work in ff with vars
+    // And two shared pools:
+    // 1: qin-st and qin-ist are enough to derive gte and lt so no matter which implementation, they converge for those
+    // 2: all animation fallbacks share the bulk of the implementation
+    */
+
+    /* convergence to derive gte and lt */
+    :where(
+      [class*="breakpoint-system-st"],
+      [class*="bp-stage-st"],
+      [class*="bp-node-st"]
+    ) {
+      --bp-qgte-0-st: ;
+      --bp-qgte-1-st: var(--bp-qin-1-st, var(--bp-qin-2-st,
+        var(--bp-qin-3-st, var(--bp-qin-4-st, var(--bp-qin-5-st,
+          var(--bp-qin-6-st, var(--bp-qin-7-st, var(--bp-qin-8-st, var(--bp-qin-9-st))))
+        )))
+      ));
+      --bp-qgte-2-st: var(--bp-qin-2-st,
+        var(--bp-qin-3-st, var(--bp-qin-4-st, var(--bp-qin-5-st,
+          var(--bp-qin-6-st, var(--bp-qin-7-st, var(--bp-qin-8-st, var(--bp-qin-9-st))))
+        )))
+      );
+      --bp-qgte-3-st: var(--bp-qin-3-st, var(--bp-qin-4-st, var(--bp-qin-5-st,
+        var(--bp-qin-6-st, var(--bp-qin-7-st, var(--bp-qin-8-st, var(--bp-qin-9-st))))
+      )));
+      --bp-qgte-4-st: var(--bp-qin-4-st, var(--bp-qin-5-st,
+        var(--bp-qin-6-st, var(--bp-qin-7-st, var(--bp-qin-8-st, var(--bp-qin-9-st))))
+      ));
+      --bp-qgte-5-st: var(--bp-qin-5-st,
+        var(--bp-qin-6-st, var(--bp-qin-7-st, var(--bp-qin-8-st, var(--bp-qin-9-st))))
+      );
+      --bp-qgte-6-st: var(--bp-qin-6-st, var(--bp-qin-7-st, var(--bp-qin-8-st, var(--bp-qin-9-st))));
+      --bp-qgte-7-st: var(--bp-qin-7-st, var(--bp-qin-8-st, var(--bp-qin-9-st)));
+      --bp-qgte-8-st: var(--bp-qin-8-st, var(--bp-qin-9-st));
+      --bp-qgte-9-st: var(--bp-qin-9-st);
+
+      --bp-qgte-0-ist: initial;
+      --bp-qgte-1-ist: var(--bp-qin-1-ist) var(--bp-qin-2-ist)
+        var(--bp-qin-3-ist) var(--bp-qin-4-ist) var(--bp-qin-5-ist)
+          var(--bp-qin-6-ist) var(--bp-qin-7-ist) var(--bp-qin-8-ist) var(--bp-qin-9-ist);
+      --bp-qgte-2-ist: var(--bp-qin-2-ist)
+        var(--bp-qin-3-ist) var(--bp-qin-4-ist) var(--bp-qin-5-ist)
+          var(--bp-qin-6-ist) var(--bp-qin-7-ist) var(--bp-qin-8-ist) var(--bp-qin-9-ist);
+      --bp-qgte-3-ist: var(--bp-qin-3-ist) var(--bp-qin-4-ist) var(--bp-qin-5-ist)
+        var(--bp-qin-6-ist) var(--bp-qin-7-ist) var(--bp-qin-8-ist) var(--bp-qin-9-ist);
+      --bp-qgte-4-ist: var(--bp-qin-4-ist) var(--bp-qin-5-ist)
+        var(--bp-qin-6-ist) var(--bp-qin-7-ist) var(--bp-qin-8-ist) var(--bp-qin-9-ist);
+      --bp-qgte-5-ist: var(--bp-qin-5-ist)
+        var(--bp-qin-6-ist) var(--bp-qin-7-ist) var(--bp-qin-8-ist) var(--bp-qin-9-ist);
+      --bp-qgte-6-ist: var(--bp-qin-6-ist) var(--bp-qin-7-ist) var(--bp-qin-8-ist) var(--bp-qin-9-ist);
+      --bp-qgte-7-ist: var(--bp-qin-7-ist) var(--bp-qin-8-ist) var(--bp-qin-9-ist);
+      --bp-qgte-8-ist: var(--bp-qin-8-ist) var(--bp-qin-9-ist);
+      --bp-qgte-9-ist: var(--bp-qin-9-ist);
+
+      --bp-qlt-0-st: var(--bp-qgte-0-ist);
+      --bp-qlt-1-st: var(--bp-qgte-1-ist);
+      --bp-qlt-2-st: var(--bp-qgte-2-ist);
+      --bp-qlt-3-st: var(--bp-qgte-3-ist);
+      --bp-qlt-4-st: var(--bp-qgte-4-ist);
+      --bp-qlt-5-st: var(--bp-qgte-5-ist);
+      --bp-qlt-6-st: var(--bp-qgte-6-ist);
+      --bp-qlt-7-st: var(--bp-qgte-7-ist);
+      --bp-qlt-8-st: var(--bp-qgte-8-ist);
+      --bp-qlt-9-st: var(--bp-qgte-9-ist);
+
+      --bp-qlt-0-ist: var(--bp-qgte-0-st);
+      --bp-qlt-1-ist: var(--bp-qgte-1-st);
+      --bp-qlt-2-ist: var(--bp-qgte-2-st);
+      --bp-qlt-3-ist: var(--bp-qgte-3-st);
+      --bp-qlt-4-ist: var(--bp-qgte-4-st);
+      --bp-qlt-5-ist: var(--bp-qgte-5-st);
+      --bp-qlt-6-ist: var(--bp-qgte-6-st);
+      --bp-qlt-7-ist: var(--bp-qgte-7-st);
+      --bp-qlt-8-ist: var(--bp-qgte-8-st);
+      --bp-qlt-9-ist: var(--bp-qgte-9-st);
+    }
+
+    /* primary if(style()) implementation */
+    @supports (color: if(style(--PropJockey: breakpoint-system): #ff00c7)) {
+      :where(
+        [class*="breakpoint-system-st"],
+        [class*="bp-stage-st"],
+        [class*="bp-node-st"]
+      ) {
+        --_bp-return-space: ;
+        /* else initial is implied - if(style()) is freaking NOVA PREEM! */
+        --bp-qin-0-st: if(style(--bp-qin-0: 1): var(--_bp-return-space););
+        --bp-qin-0-ist: if(style(--bp-qin-0: 0): var(--_bp-return-space););
+        --bp-qin-1-st: if(style(--bp-qin-1: 1): var(--_bp-return-space););
+        --bp-qin-1-ist: if(style(--bp-qin-1: 0): var(--_bp-return-space););
+        --bp-qin-2-st: if(style(--bp-qin-2: 1): var(--_bp-return-space););
+        --bp-qin-2-ist: if(style(--bp-qin-2: 0): var(--_bp-return-space););
+        --bp-qin-3-st: if(style(--bp-qin-3: 1): var(--_bp-return-space););
+        --bp-qin-3-ist: if(style(--bp-qin-3: 0): var(--_bp-return-space););
+        --bp-qin-4-st: if(style(--bp-qin-4: 1): var(--_bp-return-space););
+        --bp-qin-4-ist: if(style(--bp-qin-4: 0): var(--_bp-return-space););
+        --bp-qin-5-st: if(style(--bp-qin-5: 1): var(--_bp-return-space););
+        --bp-qin-5-ist: if(style(--bp-qin-5: 0): var(--_bp-return-space););
+        --bp-qin-6-st: if(style(--bp-qin-6: 1): var(--_bp-return-space););
+        --bp-qin-6-ist: if(style(--bp-qin-6: 0): var(--_bp-return-space););
+        --bp-qin-7-st: if(style(--bp-qin-7: 1): var(--_bp-return-space););
+        --bp-qin-7-ist: if(style(--bp-qin-7: 0): var(--_bp-return-space););
+        --bp-qin-8-st: if(style(--bp-qin-8: 1): var(--_bp-return-space););
+        --bp-qin-8-ist: if(style(--bp-qin-8: 0): var(--_bp-return-space););
+        --bp-qin-9-st: if(style(--bp-qin-9: 1): var(--_bp-return-space););
+        --bp-qin-9-ist: if(style(--bp-qin-9: 0): var(--_bp-return-space););
+        --bp-timeline-scope: var(--_bp-am-timeline-scope, );
+        --bp-animation: var(--_bp-am-animation, );
+        --bp-animation-name: var(--_bp-am-animation-name, );
+        --bp-animation-duration: var(--_bp-am-animation-duration, );
+        --bp-animation-timing-function: var(--_bp-am-animation-timing-function, );
+        --bp-animation-delay: var(--_bp-am-animation-delay, );
+        --bp-animation-iteration-count: var(--_bp-am-animation-iteration-count, );
+        --bp-animation-direction: var(--_bp-am-animation-direction, );
+        --bp-animation-fill-mode: var(--_bp-am-animation-fill-mode, );
+        --bp-animation-play-state: var(--_bp-am-animation-play-state, );
+        --bp-animation-composition: var(--_bp-am-animation-composition, );
+        --bp-animation-timeline: var(--_bp-am-animation-timeline, );
+        --bp-animation-range: var(--_bp-am-animation-range, );
+        --bp-animation-range-start: var(--_bp-am-animation-range-start, );
+        --bp-animation-range-end: var(--_bp-am-animation-range-end, );
+      }
+    }
+    /* both animation based fallbacks share these */
+    @supports (not (color: if(style(--ands: or-buts): #8100f0))) {
+      :where(
+        [class*="breakpoint-system-st"],
+        [class*="bp-stage-st"],
+        [class*="bp-node-st"]
+      ) {
+        --_bp-ani-compat-initial-var: initial;
+        /* if it's not included, this will be space.
+        // If it is included and no others after it are, it will be space.
+        // otherwise, it's initial because it was included and so was another one,
+        // therefore we need to use a comma in the fallback to separate animations.
+        */
+        --_bp-0-and-one-after-it: var(--bp-fluid-0,
+          var(--bp-fluid-1) var(--bp-fluid-2) var(--bp-fluid-3)
+          var(--bp-fluid-4) var(--bp-fluid-5) var(--bp-fluid-6)
+          var(--bp-fluid-7) var(--bp-fluid-8) var(--bp-fluid-9)
+        );
+        --_bp-1-and-one-after-it: var(--bp-fluid-1,
+          var(--bp-fluid-2) var(--bp-fluid-3)
+          var(--bp-fluid-4) var(--bp-fluid-5) var(--bp-fluid-6)
+          var(--bp-fluid-7) var(--bp-fluid-8) var(--bp-fluid-9)
+        );
+        --_bp-2-and-one-after-it: var(--bp-fluid-2,
+          var(--bp-fluid-3)
+          var(--bp-fluid-4) var(--bp-fluid-5) var(--bp-fluid-6)
+          var(--bp-fluid-7) var(--bp-fluid-8) var(--bp-fluid-9)
+        );
+        --_bp-3-and-one-after-it: var(--bp-fluid-3,
+          var(--bp-fluid-4) var(--bp-fluid-5) var(--bp-fluid-6)
+          var(--bp-fluid-7) var(--bp-fluid-8) var(--bp-fluid-9)
+        );
+        --_bp-4-and-one-after-it: var(--bp-fluid-4,
+          var(--bp-fluid-5) var(--bp-fluid-6)
+          var(--bp-fluid-7) var(--bp-fluid-8) var(--bp-fluid-9)
+        );
+        --_bp-5-and-one-after-it: var(--bp-fluid-5,
+          var(--bp-fluid-6)
+          var(--bp-fluid-7) var(--bp-fluid-8) var(--bp-fluid-9)
+        );
+        --_bp-6-and-one-after-it: var(--bp-fluid-6,
+          var(--bp-fluid-7) var(--bp-fluid-8) var(--bp-fluid-9)
+        );
+        --_bp-7-and-one-after-it: var(--bp-fluid-7, var(--bp-fluid-8) var(--bp-fluid-9));
+        --_bp-8-and-one-after-it: var(--bp-fluid-8, var(--bp-fluid-9));
+
+        /* we do what we must because we can. */
+        --_bp-st-compat-auto:
+          var(--bp-fluid-0, auto var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, auto var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, auto var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, auto var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, auto var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, auto var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, auto var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, auto var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, auto var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, auto);
+        --_bp-st-compat-normal-normal:
+          var(--bp-fluid-0, normal normal var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, normal normal var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, normal normal var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, normal normal var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, normal normal var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, normal normal var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, normal normal var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, normal normal var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, normal normal var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, normal normal);
+
+        --_bp-st-compat-normal:
+          var(--bp-fluid-0, normal var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, normal var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, normal var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, normal var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, normal var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, normal var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, normal var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, normal var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, normal var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, normal);
+
+        --bp-timeline-scope: var(--_bp-am-timeline-scope, );
+        --bp-animation: var(--_bp-am-animation, ) var(--_bp-st-compat-animation), ;
+        animation: var(--_bp-am-animation, ) var(--_bp-st-compat-animation);
+        animation-timeline: var(--_bp-am-animation-timeline, ) var(--_bp-st-compat-auto);
+        animation-range: var(--_bp-am-animation-range, ) var(--_bp-st-compat-normal-normal);
+
+        --bp-animation-duration: var(--_bp-am-animation-duration, )
+          var(--bp-fluid-0, 2s var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, 2s var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, 2s var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, 2s var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, 2s var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, 2s var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, 2s var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, 2s var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, 2s var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, 2s), ;
+        --bp-animation-timing-function: var(--_bp-am-animation-timing-function, )
+          var(--bp-fluid-0, linear var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, linear var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, linear var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, linear var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, linear var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, linear var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, linear var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, linear var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, linear var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, linear), ;
+        --bp-animation-delay: var(--_bp-am-animation-delay, )
+          var(--bp-fluid-0, calc(var(--bp-qin-0) * -1s) var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, calc(var(--bp-qin-1) * -1s) var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, calc(var(--bp-qin-2) * -1s) var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, calc(var(--bp-qin-3) * -1s) var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, calc(var(--bp-qin-4) * -1s) var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, calc(var(--bp-qin-5) * -1s) var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, calc(var(--bp-qin-6) * -1s) var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, calc(var(--bp-qin-7) * -1s) var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, calc(var(--bp-qin-8) * -1s) var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, calc(var(--bp-qin-9) * -1s)), ;
+        --bp-animation-iteration-count: var(--_bp-am-animation-iteration-count, )
+          var(--bp-fluid-0, 1 var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, 1 var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, 1 var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, 1 var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, 1 var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, 1 var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, 1 var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, 1 var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, 1 var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, 1), ;
+        --bp-animation-direction: var(--_bp-am-animation-direction, ) var(--_bp-st-compat-normal), ;
+        --bp-animation-fill-mode: var(--_bp-am-animation-fill-mode, )
+          var(--bp-fluid-0, none var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, none var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, none var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, none var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, none var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, none var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, none var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, none var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, none var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, none), ;
+        --bp-animation-play-state: var(--_bp-am-animation-play-state, )
+          var(--bp-fluid-0, paused var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, paused var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, paused var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, paused var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, paused var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, paused var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, paused var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, paused var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, paused var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, paused), ;
+        --bp-animation-composition: var(--_bp-am-animation-composition, )
+          var(--bp-fluid-0, replace var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, replace var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, replace var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, replace var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, replace var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, replace var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, replace var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, replace var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, replace var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, replace), ;
+        --bp-animation-timeline: var(--_bp-am-animation-timeline, )
+          var(--bp-fluid-0, auto var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, auto var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, auto var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, auto var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, auto var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, auto var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, auto var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, auto var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, auto var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, auto), ;
+        --bp-animation-range: var(--_bp-am-animation-range, ) var(--_bp-st-compat-normal-normal), ;
+        --bp-animation-range-start: var(--_bp-am-animation-range-start, )  var(--_bp-st-compat-normal), ;
+        --bp-animation-range-end: var(--_bp-am-animation-range-end, )  var(--_bp-st-compat-normal), ;
+      }
+    }
+
+    /* Safari and pre-if(style()) chrome, use animation casting but scrape off tainting with a revert-layer spec hack */
+    @supports (not (color: if(style(--ands: or-buts): #8100f0))) and (not (-moz-appearance: none)) {
+      @keyframes --_bp-qin-0-cast-to-st { 50%, 100% { --_bp-qin-0-st: ; --_bp-qin-0-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 0 */
+      @keyframes --_bp-qin-1-cast-to-st { 50%, 100% { --_bp-qin-1-st: ; --_bp-qin-1-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 1 */
+      @keyframes --_bp-qin-2-cast-to-st { 50%, 100% { --_bp-qin-2-st: ; --_bp-qin-2-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 2 */
+      @keyframes --_bp-qin-3-cast-to-st { 50%, 100% { --_bp-qin-3-st: ; --_bp-qin-3-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 3 */
+      @keyframes --_bp-qin-4-cast-to-st { 50%, 100% { --_bp-qin-4-st: ; --_bp-qin-4-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 4 */
+      @keyframes --_bp-qin-5-cast-to-st { 50%, 100% { --_bp-qin-5-st: ; --_bp-qin-5-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 5 */
+      @keyframes --_bp-qin-6-cast-to-st { 50%, 100% { --_bp-qin-6-st: ; --_bp-qin-6-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 6 */
+      @keyframes --_bp-qin-7-cast-to-st { 50%, 100% { --_bp-qin-7-st: ; --_bp-qin-7-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 7 */
+      @keyframes --_bp-qin-8-cast-to-st { 50%, 100% { --_bp-qin-8-st: ; --_bp-qin-8-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 8 */
+      @keyframes --_bp-qin-9-cast-to-st { 50%, 100% { --_bp-qin-9-st: ; --_bp-qin-9-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 9 */
+      :where(
+        [class*="breakpoint-system-st"],
+        [class*="bp-stage-st"],
+        [class*="bp-node-st"]
+      ) {
+        --bp-animation-name: var(--_bp-am-animation-name, )
+          var(--bp-fluid-0, --_bp-qin-0-cast-to-st var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, --_bp-qin-1-cast-to-st var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, --_bp-qin-2-cast-to-st var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, --_bp-qin-3-cast-to-st var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, --_bp-qin-4-cast-to-st var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, --_bp-qin-5-cast-to-st var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, --_bp-qin-6-cast-to-st var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, --_bp-qin-7-cast-to-st var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, --_bp-qin-8-cast-to-st var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, --_bp-qin-9-cast-to-st), ;
+        --_bp-st-compat-animation:
+          var(--bp-fluid-0, --_bp-qin-0-cast-to-st 2s linear calc(var(--bp-qin-0) * -1s) paused var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, --_bp-qin-1-cast-to-st 2s linear calc(var(--bp-qin-1) * -1s) paused var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, --_bp-qin-2-cast-to-st 2s linear calc(var(--bp-qin-2) * -1s) paused var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, --_bp-qin-3-cast-to-st 2s linear calc(var(--bp-qin-3) * -1s) paused var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, --_bp-qin-4-cast-to-st 2s linear calc(var(--bp-qin-4) * -1s) paused var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, --_bp-qin-5-cast-to-st 2s linear calc(var(--bp-qin-5) * -1s) paused var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, --_bp-qin-6-cast-to-st 2s linear calc(var(--bp-qin-6) * -1s) paused var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, --_bp-qin-7-cast-to-st 2s linear calc(var(--bp-qin-7) * -1s) paused var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, --_bp-qin-8-cast-to-st 2s linear calc(var(--bp-qin-8) * -1s) paused var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, --_bp-qin-9-cast-to-st 2s linear calc(var(--bp-qin-9) * -1s) paused);
+
+        /* revert to on state */
+        @layer {
+          --bp-qin-0-st: ;
+          --bp-qin-0-ist: initial;
+          --bp-qin-1-st: ;
+          --bp-qin-1-ist: initial;
+          --bp-qin-2-st: ;
+          --bp-qin-2-ist: initial;
+          --bp-qin-3-st: ;
+          --bp-qin-3-ist: initial;
+          --bp-qin-4-st: ;
+          --bp-qin-4-ist: initial;
+          --bp-qin-5-st: ;
+          --bp-qin-5-ist: initial;
+          --bp-qin-6-st: ;
+          --bp-qin-6-ist: initial;
+          --bp-qin-7-st: ;
+          --bp-qin-7-ist: initial;
+          --bp-qin-8-st: ;
+          --bp-qin-8-ist: initial;
+          --bp-qin-9-st: ;
+          --bp-qin-9-ist: initial;
+        }
+        /* if tainted and on, revert to untainted on state, else use untainted off state */
+        @layer {
+          /* default off states, untainted but overwritten by the animation qin on state */
+          --_bp-qin-0-st: initial;
+          --_bp-qin-0-ist: ;
+          --_bp-qin-1-st: initial;
+          --_bp-qin-1-ist: ;
+          --_bp-qin-2-st: initial;
+          --_bp-qin-2-ist: ;
+          --_bp-qin-3-st: initial;
+          --_bp-qin-3-ist: ;
+          --_bp-qin-4-st: initial;
+          --_bp-qin-4-ist: ;
+          --_bp-qin-5-st: initial;
+          --_bp-qin-5-ist: ;
+          --_bp-qin-6-st: initial;
+          --_bp-qin-6-ist: ;
+          --_bp-qin-7-st: initial;
+          --_bp-qin-7-ist: ;
+          --_bp-qin-8-st: initial;
+          --_bp-qin-8-ist: ;
+          --_bp-qin-9-st: initial;
+          --_bp-qin-9-ist: ;
+
+          /* can't taint this, un-tainted love, and other classic hits */
+          --bp-qin-0-st: revert-layer var(--_bp-qin-0-st);
+          --bp-qin-0-ist: var(--_bp-qin-0-ist, revert-layer);
+          --bp-qin-1-st: revert-layer var(--_bp-qin-1-st);
+          --bp-qin-1-ist: var(--_bp-qin-1-ist, revert-layer);
+          --bp-qin-2-st: revert-layer var(--_bp-qin-2-st);
+          --bp-qin-2-ist: var(--_bp-qin-2-ist, revert-layer);
+          --bp-qin-3-st: revert-layer var(--_bp-qin-3-st);
+          --bp-qin-3-ist: var(--_bp-qin-3-ist, revert-layer);
+          --bp-qin-4-st: revert-layer var(--_bp-qin-4-st);
+          --bp-qin-4-ist: var(--_bp-qin-4-ist, revert-layer);
+          --bp-qin-5-st: revert-layer var(--_bp-qin-5-st);
+          --bp-qin-5-ist: var(--_bp-qin-5-ist, revert-layer);
+          --bp-qin-6-st: revert-layer var(--_bp-qin-6-st);
+          --bp-qin-6-ist: var(--_bp-qin-6-ist, revert-layer);
+          --bp-qin-7-st: revert-layer var(--_bp-qin-7-st);
+          --bp-qin-7-ist: var(--_bp-qin-7-ist, revert-layer);
+          --bp-qin-8-st: revert-layer var(--_bp-qin-8-st);
+          --bp-qin-8-ist: var(--_bp-qin-8-ist, revert-layer);
+          --bp-qin-9-st: revert-layer var(--_bp-qin-9-st);
+          --bp-qin-9-ist: var(--_bp-qin-9-ist, revert-layer);
+        }
+      }
+    }
+    /* firefox implementation - can't scrape taint but thankfully space toggle taint doesn't seem to prevent anything in ff */
+    @supports (not (color: if(style(--ands: or-buts): #8100f0))) and (-moz-appearance: none) {
+      @keyframes --_bp-qin-0-taint-to-st { 50%, 100% { --bp-qin-0-st: ; --bp-qin-0-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 0 */
+      @keyframes --_bp-qin-1-taint-to-st { 50%, 100% { --bp-qin-1-st: ; --bp-qin-1-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 1 */
+      @keyframes --_bp-qin-2-taint-to-st { 50%, 100% { --bp-qin-2-st: ; --bp-qin-2-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 2 */
+      @keyframes --_bp-qin-3-taint-to-st { 50%, 100% { --bp-qin-3-st: ; --bp-qin-3-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 3 */
+      @keyframes --_bp-qin-4-taint-to-st { 50%, 100% { --bp-qin-4-st: ; --bp-qin-4-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 4 */
+      @keyframes --_bp-qin-5-taint-to-st { 50%, 100% { --bp-qin-5-st: ; --bp-qin-5-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 5 */
+      @keyframes --_bp-qin-6-taint-to-st { 50%, 100% { --bp-qin-6-st: ; --bp-qin-6-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 6 */
+      @keyframes --_bp-qin-7-taint-to-st { 50%, 100% { --bp-qin-7-st: ; --bp-qin-7-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 7 */
+      @keyframes --_bp-qin-8-taint-to-st { 50%, 100% { --bp-qin-8-st: ; --bp-qin-8-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 8 */
+      @keyframes --_bp-qin-9-taint-to-st { 50%, 100% { --bp-qin-9-st: ; --bp-qin-9-ist: var(--_bp-ani-compat-initial-var); } } /* in bp 9 */
+
+      :where(
+        [class*="breakpoint-system-st"],
+        [class*="bp-stage-st"],
+        [class*="bp-node-st"]
+      ) {
+        --bp-qin-0-st: initial;
+        --bp-qin-0-ist: ;
+        --bp-qin-1-st: initial;
+        --bp-qin-1-ist: ;
+        --bp-qin-2-st: initial;
+        --bp-qin-2-ist: ;
+        --bp-qin-3-st: initial;
+        --bp-qin-3-ist: ;
+        --bp-qin-4-st: initial;
+        --bp-qin-4-ist: ;
+        --bp-qin-5-st: initial;
+        --bp-qin-5-ist: ;
+        --bp-qin-6-st: initial;
+        --bp-qin-6-ist: ;
+        --bp-qin-7-st: initial;
+        --bp-qin-7-ist: ;
+        --bp-qin-8-st: initial;
+        --bp-qin-8-ist: ;
+        --bp-qin-9-st: initial;
+        --bp-qin-9-ist: ;
+        --bp-animation-name: var(--_bp-am-animation-name, )
+          var(--bp-fluid-0, --_bp-qin-0-taint-to-st var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, --_bp-qin-1-taint-to-st var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, --_bp-qin-2-taint-to-st var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, --_bp-qin-3-taint-to-st var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, --_bp-qin-4-taint-to-st var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, --_bp-qin-5-taint-to-st var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, --_bp-qin-6-taint-to-st var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, --_bp-qin-7-taint-to-st var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, --_bp-qin-8-taint-to-st var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, --_bp-qin-9-taint-to-st), ;
+        --_bp-st-compat-animation:
+          var(--bp-fluid-0, --_bp-qin-0-taint-to-st 2s linear calc(var(--bp-qin-0) * -1s) paused var(--_bp-0-and-one-after-it, , ))
+          var(--bp-fluid-1, --_bp-qin-1-taint-to-st 2s linear calc(var(--bp-qin-1) * -1s) paused var(--_bp-1-and-one-after-it, , ))
+          var(--bp-fluid-2, --_bp-qin-2-taint-to-st 2s linear calc(var(--bp-qin-2) * -1s) paused var(--_bp-2-and-one-after-it, , ))
+          var(--bp-fluid-3, --_bp-qin-3-taint-to-st 2s linear calc(var(--bp-qin-3) * -1s) paused var(--_bp-3-and-one-after-it, , ))
+          var(--bp-fluid-4, --_bp-qin-4-taint-to-st 2s linear calc(var(--bp-qin-4) * -1s) paused var(--_bp-4-and-one-after-it, , ))
+          var(--bp-fluid-5, --_bp-qin-5-taint-to-st 2s linear calc(var(--bp-qin-5) * -1s) paused var(--_bp-5-and-one-after-it, , ))
+          var(--bp-fluid-6, --_bp-qin-6-taint-to-st 2s linear calc(var(--bp-qin-6) * -1s) paused var(--_bp-6-and-one-after-it, , ))
+          var(--bp-fluid-7, --_bp-qin-7-taint-to-st 2s linear calc(var(--bp-qin-7) * -1s) paused var(--_bp-7-and-one-after-it, , ))
+          var(--bp-fluid-8, --_bp-qin-8-taint-to-st 2s linear calc(var(--bp-qin-8) * -1s) paused var(--_bp-8-and-one-after-it, , ))
+          var(--bp-fluid-9, --_bp-qin-9-taint-to-st 2s linear calc(var(--bp-qin-9) * -1s) paused);
+      }
+    }
+
     /* resolve aspect-ratio handling, default cross cap setting to using auto-measure's cross export or 100cqh */
     @property --_bp-ar-flag { syntax: "<integer>"; initial-value: 0; inherits: false; }
     @property --bpu-main-max { syntax: "<number>"; initial-value: 0; inherits: false; }
@@ -916,9 +1548,9 @@
     @property --bpu-cross-result-n { syntax: "<number>"; initial-value: 0; inherits: true; }
     @property --bpu-cross-result { syntax: "<length>"; initial-value: 0px; inherits: true; }
     :where(
-      .breakpoint-system,
-      .bp-stage,
-      .bp-node
+      [class*="breakpoint-system"],
+      [class*="bp-stage"],
+      [class*="bp-node"]
     ) {
       --bpu-aspect-ratio: 0; /* not registered so the user doesn't have to write calc() to use it */
       --_bp-ar-flag: calc(clamp(0, (var(--bpu-aspect-ratio, 0)) * 100000, 1));
@@ -1086,9 +1718,9 @@
     @property --bpu-xxl { syntax: "<length>"; initial-value: 33.18px; inherits: true; }
     @property --bpu-xxxl { syntax: "<length>"; initial-value: 39.81px; inherits: true; }
     :where(
-      .breakpoint-system,
-      .bp-stage,
-      .bp-node
+      [class*="breakpoint-system"],
+      [class*="bp-stage"],
+      [class*="bp-node"]
     ) {
       /* --_bp-fluid-scalar */
       --bpu-1: calc(var(--bpu-main-result-n) / var(--_bp-q-lower-bound));
@@ -1218,9 +1850,9 @@
     /* Working @container style() check. Chrome 111 (+1 because of Opera 97 flag) only, Safari 18 - 26 are broken, firefox nyi */
     @supports (background: paint(for-chromium)) and (animation-composition: add) {
       :where(
-        .breakpoint-system,
-        .bp-stage,
-        .bp-node
+        [class*="breakpoint-system"],
+        [class*="bp-stage"],
+        [class*="bp-node"]
       ) {
         @container style(--_bp-handoff: 0) {
           /* set A, ref B */
@@ -1254,9 +1886,9 @@
     }
     @supports not ((background: paint(for-chromium)) and (animation-composition: add)) {
       :where(
-        .breakpoint-system,
-        .bp-stage,
-        .bp-node
+        [class*="breakpoint-system"],
+        [class*="bp-stage"],
+        [class*="bp-node"]
       ) {
         &:not(& &),
         & & &:not(& & & &),
@@ -1386,9 +2018,9 @@
     @property --ibpu-128px { syntax: "<length>"; initial-value: 128px; inherits: true; }
     @property --ibpu-160px { syntax: "<length>"; initial-value: 160px; inherits: true; }
     :where(
-      .breakpoint-system,
-      .bp-stage,
-      .bp-node
+      [class*="breakpoint-system"],
+      [class*="bp-stage"],
+      [class*="bp-node"]
     ) {
       /* bpu-1rem !== 1rem if user scaling and author opted-out. Also changes with emulation. */
       --ibpu-1rem-n: calc(var(--ibpu-1) * var(--_bp-author-rem-basis));
